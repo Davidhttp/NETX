@@ -1,48 +1,27 @@
 /* ==========================================================
    NETX · styles.css
-   Estilos propios sobre Bootstrap 5. Colores en variables CSS.
+   Estilos base y puente con Bootstrap. Cargar DESPUÉS de
+   variables.css y de Bootstrap.
    ========================================================== */
 
 :root {
-  /* Azul corporativo y acentos */
-  --netx-blue-900: #0b2545;
-  --netx-blue-700: #13407a;
-  --netx-blue-500: #1d6fd1;
-  --netx-blue-100: #e6effa;
-  --netx-accent:   #f2a900;   /* acento: estados de atención, foco */
-
-  /* Neutros */
-  --netx-bg:       #f4f6f9;
-  --netx-surface:  #ffffff;
-  --netx-border:   #dde3ec;
-  --netx-text:     #1c2733;
-  --netx-muted:    #5d6b7c;
-
-  /* Medidas de layout */
-  --header-h:      56px;
-  --sidebar-w:     248px;
-  --sidebar-w-min: 64px;
-
-  /* Tipografía (sistema, sin descargas) */
-  --font-base: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-
-  /* Enlace con Bootstrap */
-  --bs-primary: var(--netx-blue-500);
+  /* Puente: Bootstrap lee los tokens de NETX */
+  --bs-primary: var(--color-primary);
   --bs-primary-rgb: 29, 111, 209;
   --bs-body-font-family: var(--font-base);
-  --bs-body-color: var(--netx-text);
-  --bs-body-bg: var(--netx-bg);
-  --bs-link-color: var(--netx-blue-500);
-  --bs-border-color: var(--netx-border);
+  --bs-body-color: var(--color-text);
+  --bs-body-bg: var(--color-bg);
+  --bs-link-color: var(--color-primary);
+  --bs-border-color: var(--color-border);
 }
 
 body { padding-top: var(--header-h); }
 
-.text-muted { color: var(--netx-muted) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
 
 /* Foco visible para teclado */
 :focus-visible {
-  outline: 3px solid var(--netx-accent);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -51,130 +30,23 @@ body { padding-top: var(--header-h); }
   top: 8px;
   left: 8px;
   z-index: 2000;
-  background: var(--netx-surface);
+  background: var(--color-surface);
   padding: .5rem .75rem;
-  border-radius: .375rem;
+  border-radius: var(--radius-sm);
 }
 
-/* ---------- Header ---------- */
-.app-header {
-  height: var(--header-h);
-  background: var(--netx-blue-900);
-  color: #fff;
-  z-index: 1030;
-}
+/* ---------- Componentes (Custom Elements) ---------- */
+/* El contenedor no genera caja propia: el <header> y el <aside> internos
+   participan directamente en el layout. */
+netx-header,
+netx-sidebar { display: contents; }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  color: #fff;
-  font-weight: 700;
-  letter-spacing: .02em;
-  text-decoration: none;
-}
-.brand:hover { color: #fff; }
-
-.brand-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--netx-blue-500);
-  color: #fff;
-  font-size: .95rem;
-}
-
-.chapter-name {
-  color: #b8c7dc;
-  font-size: .9rem;
-  padding-left: .75rem;
-  border-left: 1px solid rgba(255, 255, 255, .25);
-}
-
-.app-header .btn-icon,
-.app-header .btn-user {
-  color: #fff;
-  border: 0;
-  display: inline-flex;
-  align-items: center;
-}
-.app-header .btn-icon:hover,
-.app-header .btn-user:hover { background: rgba(255, 255, 255, .12); color: #fff; }
-
-.avatar {
-  display: inline-grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--netx-accent);
-  color: var(--netx-blue-900);
-  font-weight: 700;
-  font-size: .85rem;
-}
-
-/* ---------- Shell ---------- */
+/* ---------- Estructura general ---------- */
 .app-shell {
   display: flex;
   min-height: calc(100vh - var(--header-h));
 }
 
-/* ---------- Sidebar ---------- */
-.app-sidebar {
-  background: var(--netx-surface);
-  border-right: 1px solid var(--netx-border);
-}
-
-@media (min-width: 992px) {
-  .app-sidebar {
-    flex: 0 0 var(--sidebar-w);
-    width: var(--sidebar-w);
-    position: sticky;
-    top: var(--header-h);
-    height: calc(100vh - var(--header-h));
-    overflow-y: auto;
-    transition: width .2s ease, flex-basis .2s ease;
-  }
-
-  .sidebar-collapsed .app-sidebar {
-    flex-basis: var(--sidebar-w-min);
-    width: var(--sidebar-w-min);
-  }
-  .sidebar-collapsed .nav-text { display: none; }
-  .sidebar-collapsed .side-nav .nav-link { justify-content: center; padding-inline: 0; }
-}
-
-.side-nav { padding: .75rem .5rem; }
-
-.side-nav .nav-link {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: .6rem .75rem;
-  border-radius: .5rem;
-  color: var(--netx-text);
-  font-weight: 500;
-}
-.side-nav .nav-link i { font-size: 1.15rem; color: var(--netx-muted); }
-.side-nav .nav-link:hover { background: var(--netx-blue-100); }
-.side-nav .nav-link.active {
-  background: var(--netx-blue-100);
-  color: var(--netx-blue-700);
-  box-shadow: inset 3px 0 0 var(--netx-blue-500);
-}
-.side-nav .nav-link.active i { color: var(--netx-blue-500); }
-
-.nav-group {
-  list-style: none;
-  margin: 1rem .75rem .25rem;
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--netx-muted);
-}
-
-/* ---------- Contenido ---------- */
 .app-main {
   flex: 1 1 auto;
   min-width: 0;                 /* evita desbordes en tablas anchas */
@@ -185,11 +57,13 @@ body { padding-top: var(--header-h); }
 .app-main:focus { outline: none; }
 
 .page-head { margin-bottom: 1.25rem; }
+.app-footer { border-top: 1px solid var(--color-border); }
 
+/* ---------- Tarjetas ---------- */
 .card {
-  border: 1px solid var(--netx-border);
-  border-radius: .75rem;
-  background: var(--netx-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
 .card-link {
@@ -197,16 +71,13 @@ body { padding-top: var(--header-h); }
   text-decoration: none;
   transition: border-color .15s ease;
 }
-.card-link:hover { border-color: var(--netx-blue-500); color: inherit; }
+.card-link:hover { border-color: var(--color-primary); color: inherit; }
+.card-icon { font-size: 1.6rem; color: var(--color-primary); }
 
-.card-icon { font-size: 1.6rem; color: var(--netx-blue-500); }
-
-.app-footer { border-top: 1px solid var(--netx-border); }
-
-/* ---------- Estatus de miembros (para HU-06 a HU-09) ---------- */
-.badge-activo     { background: #1e8e5a; }
-.badge-suspendido { background: var(--netx-accent); color: var(--netx-blue-900); }
-.badge-baja       { background: #b3382c; }
+/* ---------- Estatus de miembros (HU-06 a HU-09) ---------- */
+.badge-activo     { background: var(--color-success); }
+.badge-suspendido { background: var(--color-warning); color: var(--netx-blue-900); }
+.badge-baja       { background: var(--color-danger); }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }

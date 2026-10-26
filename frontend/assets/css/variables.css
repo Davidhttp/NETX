@@ -1,0 +1,77 @@
+/* ==========================================================
+   NETX · variables.css
+   Única fuente de verdad de colores, tipografía y medidas.
+   Ningún otro archivo CSS debe usar colores hexadecimales
+   directos: siempre var(--token).
+   ========================================================== */
+
+:root {
+  /* ---------- 1. Paleta base (valores crudos) ---------- */
+
+  /* Azul corporativo */
+  --netx-blue-900: #0b2545;
+  --netx-blue-700: #13407a;
+  --netx-blue-500: #1d6fd1;
+  --netx-blue-300: #8db8ec;
+  --netx-blue-100: #e6effa;
+
+  /* Acento */
+  --netx-amber-500: #f2a900;
+  --netx-amber-100: #fff3d1;
+
+  /* Neutros */
+  --netx-gray-900: #1c2733;
+  --netx-gray-600: #5d6b7c;
+  --netx-gray-300: #dde3ec;
+  --netx-gray-100: #f4f6f9;
+  --netx-white:    #ffffff;
+
+  /* Estados */
+  --netx-green-600: #1e8e5a;
+  --netx-red-600:   #b3382c;
+
+  /* ---------- 2. Tokens semánticos (usar estos en componentes) ---------- */
+
+  /* Marca */
+  --color-primary:        var(--netx-blue-500);
+  --color-primary-dark:   var(--netx-blue-700);
+  --color-primary-soft:   var(--netx-blue-100);
+  --color-accent:         var(--netx-amber-500);
+  --color-accent-soft:    var(--netx-amber-100);
+
+  /* Superficies */
+  --color-bg:             var(--netx-gray-100);
+  --color-surface:        var(--netx-white);
+  --color-border:         var(--netx-gray-300);
+
+  /* Texto */
+  --color-text:           var(--netx-gray-900);
+  --color-text-muted:     var(--netx-gray-600);
+  --color-text-inverse:   var(--netx-white);
+  --color-text-inverse-muted: var(--netx-blue-300);
+
+  /* Estados (badges de estatus de miembro, alertas) */
+  --color-success:        var(--netx-green-600);
+  --color-warning:        var(--netx-amber-500);
+  --color-danger:         var(--netx-red-600);
+
+  /* Componentes */
+  --header-bg:            var(--netx-blue-900);
+  --header-text:          var(--color-text-inverse);
+  --sidebar-bg:           var(--color-surface);
+  --sidebar-link-hover:   var(--color-primary-soft);
+  --sidebar-link-active-bg:   var(--color-primary-soft);
+  --sidebar-link-active-text: var(--color-primary-dark);
+  --focus-ring:           var(--color-accent);
+
+  /* ---------- 3. Tipografía ---------- */
+  --font-base: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---------- 4. Medidas de layout ---------- */
+  --header-h:      56px;
+  --sidebar-w:     248px;
+  --sidebar-w-min: 64px;
+  --radius-sm:     .375rem;
+  --radius-md:     .5rem;
+  --radius-lg:     .75rem;
+}

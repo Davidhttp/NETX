@@ -3,102 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NETX · Gestión de networking empresarial</title>
+  <title>Panel · NETX</title>
   <meta name="description" content="Plataforma web para administrar un capítulo de networking empresarial.">
 
-  <!-- Bootstrap 5.3 (CDN). Para trabajar sin conexión, descargar y apuntar a assets/vendor/ -->
+  <!-- Bootstrap 5.3 (CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- Estilos propios (variables corporativas) -->
+  <!-- Estilos NETX: el orden importa -->
+  <link rel="stylesheet" href="assets/css/variables.css">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/components/header.css">
+  <link rel="stylesheet" href="assets/css/components/sidebar.css">
 </head>
 <body>
-
   <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 
-  <!-- ============ HEADER ============ -->
-  <header class="app-header navbar navbar-expand fixed-top px-3">
-    <button class="btn btn-icon d-lg-none me-2" type="button"
-            data-bs-toggle="offcanvas" data-bs-target="#sidebar"
-            aria-controls="sidebar" aria-label="Abrir menú">
-      <i class="bi bi-list fs-4"></i>
-    </button>
-
-    <button class="btn btn-icon d-none d-lg-inline-flex me-2" type="button"
-            id="btnColapsar" aria-controls="sidebar" aria-expanded="true"
-            aria-label="Contraer menú lateral">
-      <i class="bi bi-layout-sidebar-inset fs-5"></i>
-    </button>
-
-    <a class="navbar-brand brand" href="index.html">
-      <span class="brand-mark" aria-hidden="true">N</span>NETX
-    </a>
-
-    <span class="chapter-name d-none d-md-inline ms-3">Capítulo Morelia</span>
-
-    <div class="ms-auto dropdown">
-      <button class="btn btn-user dropdown-toggle" type="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="avatar" aria-hidden="true">U</span>
-        <span class="d-none d-sm-inline ms-2" id="nombreUsuario">Usuario</span>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><h6 class="dropdown-header" id="rolUsuario">Rol</h6></li>
-        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mi perfil</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
-      </ul>
-    </div>
-  </header>
+  <!-- Componentes reutilizables -->
+  <netx-header chapter="Capítulo Morelia" user-name="Usuario" user-role="Sin sesión"></netx-header>
 
   <div class="app-shell">
+    <netx-sidebar active="panel"></netx-sidebar>
 
-    <!-- ============ SIDEBAR ============ -->
-    <aside class="app-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="sidebar"
-           aria-label="Navegación principal">
-      <div class="offcanvas-header d-lg-none">
-        <span class="brand"><span class="brand-mark" aria-hidden="true">N</span>NETX</span>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-                data-bs-target="#sidebar" aria-label="Cerrar menú"></button>
-      </div>
-
-      <nav class="offcanvas-body flex-column p-0">
-        <ul class="nav flex-column side-nav">
-          <li class="nav-item">
-            <a class="nav-link active" href="index.html" aria-current="page">
-              <i class="bi bi-speedometer2"></i><span class="nav-text">Panel</span>
-            </a>
-          </li>
-
-          <li class="nav-group nav-text">Capítulo</li>
-          <li class="nav-item">
-            <a class="nav-link" href="#miembros">
-              <i class="bi bi-people"></i><span class="nav-text">Miembros</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#reglas">
-              <i class="bi bi-sliders"></i><span class="nav-text">Reglas del capítulo</span>
-            </a>
-          </li>
-
-          <li class="nav-group nav-text">Operación semanal</li>
-          <li class="nav-item">
-            <a class="nav-link" href="#reuniones">
-              <i class="bi bi-calendar-event"></i><span class="nav-text">Reuniones</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#referidos">
-              <i class="bi bi-arrow-left-right"></i><span class="nav-text">Referidos</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- ============ CONTENIDO ============ -->
     <main class="app-main" id="contenido" tabindex="-1">
       <div class="container-fluid p-3 p-lg-4">
 
@@ -109,12 +35,9 @@
 
         <div class="alert alert-info d-flex align-items-start gap-2" role="status">
           <i class="bi bi-info-circle mt-1"></i>
-          <div>
-            Estructura base lista. Los indicadores del panel se conectarán en el Sprint 4 (HU-28).
-          </div>
+          <div>Estructura base lista. Los indicadores del panel se conectarán en el Sprint 4 (HU-28).</div>
         </div>
 
-        <!-- Accesos a los módulos del Sprint 1 -->
         <div class="row g-3">
           <div class="col-12 col-md-6 col-xl-4">
             <a class="card card-link h-100" href="#miembros">
@@ -142,10 +65,12 @@
         <small class="text-muted">NETX · Instituto Tecnológico de Morelia · <span id="anio"></span></small>
       </footer>
     </main>
-
   </div>
 
+  <!-- Orden: Bootstrap → componentes → lógica común -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/components/header.js"></script>
+  <script src="assets/js/components/sidebar.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 </html>

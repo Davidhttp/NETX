@@ -1,0 +1,54 @@
+/* Componente: sidebar (components/sidebar.php) */
+
+.app-sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--color-border);
+}
+
+@media (min-width: 992px) {
+  .app-sidebar {
+    flex: 0 0 var(--sidebar-w);
+    width: var(--sidebar-w);
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    transition: width .2s ease, flex-basis .2s ease;
+  }
+
+  .sidebar-collapsed .app-sidebar {
+    flex-basis: var(--sidebar-w-min);
+    width: var(--sidebar-w-min);
+  }
+  .sidebar-collapsed .nav-text { display: none; }
+  .sidebar-collapsed .side-nav .nav-link { justify-content: center; padding-inline: 0; }
+}
+
+.side-nav { padding: .75rem .5rem; }
+
+.side-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .75rem;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-weight: 500;
+}
+.side-nav .nav-link i { font-size: 1.15rem; color: var(--color-text-muted); }
+.side-nav .nav-link:hover { background: var(--sidebar-link-hover); }
+
+.side-nav .nav-link.active {
+  background: var(--sidebar-link-active-bg);
+  color: var(--sidebar-link-active-text);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+.side-nav .nav-link.active i { color: var(--color-primary); }
+
+.nav-group {
+  list-style: none;
+  margin: 1rem .75rem .25rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
