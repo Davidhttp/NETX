@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestión de Miembros · NETX</title>
+  <meta name="description" content="Padrón de miembros del capítulo, asignación y exclusividad de giros comerciales.">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Header -->
+  <netx-header></netx-header>
+
+  <div class="app-shell">
+    <!-- Sidebar con active="miembros" -->
+    <netx-sidebar active="miembros"></netx-sidebar>
+
+    <main class="app-main" id="contenido" tabindex="-1">
+      <div class="container-fluid p-3 p-lg-4">
+
+        <!-- Encabezado de Sección  -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center page-head gap-2">
+          <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">Gestión de Miembros</h1>
+            <p class="text-muted small mb-0">Padrón de socios activos, historial de membresías y exclusividad de giros comerciales.</p>
+          </div>
+          <div>
+            <button class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm"
+                    data-bs-toggle="modal" data-bs-target="#modalAgregarMiembro">
+              <i class="bi bi-person-plus-fill"></i>
+              <span>+ Agregar Miembro</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner de Exclusividad de Giro -->
+        <div class="alert alert-light border d-flex align-items-center gap-2 py-2 mb-3">
+          <i class="bi bi-shield-lock-fill text-primary fs-5"></i>
+          <div class="small">
+            <strong>Regla de Exclusividad:</strong> Solo puede existir un único miembro con estatus <strong>Activo</strong> por cada categoría o giro empresarial en el capítulo.
+          </div>
+        </div>
+
+        <!-- Barra de Filtros y Búsqueda  -->
+        <div class="card p-3 mb-3">
+          <div class="row g-2 align-items-center">
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-muted mb-1">Filtrar por Giro Comercial:</label>
+              <select class="form-select form-select-sm" id="filtroGiro">
+                <option value="">Todos los giros</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label small text-muted mb-1">Filtrar por Estatus:</label>
+              <select class="form-select form-select-sm" id="filtroEstatus">
+                <option value="">Todos los estatus</option>
+                <option value="Activo">Activo</option>
+                <option value="Suspendido">Suspendido</option>
+                <option value="Baja">Baja</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-5">
+              <label class="form-label small text-muted mb-1">Buscar por nombre o empresa:</label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="buscadorMiembros" placeholder="Buscar quick...">
+                <button class="btn btn-outline-secondary" type="button" id="btnLimpiarFiltros" title="Limpiar filtros">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Miembros  -->
+        <div class="card p-0 mb-4 overflow-hidden">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr class="small text-muted text-uppercase">
+                  <th>Nombre y Empresa</th>
+                  <th>Giro Comercial</th>
+                  <th>Contacto</th>
+                  <th>Fecha Ingreso</th>
+                  <th>Socio Originador</th>
+                  <th>Estatus</th>
+                  <th class="text-end pe-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaMiembros">
+                <!-- Se llena dinámicamente con JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="p-3 border-top d-flex justify-content-between align-items-center bg-light">
+            <small class="text-muted" id="contadorMiembros">Mostrando miembros...</small>
+            <nav aria-label="Paginación de miembros">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">Siguiente</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="app-footer px-3 px-lg-4 py-3 mt-auto">
+        <small class="text-muted">NETX · Capítulo Morelia · Membresía y Crecimiento Empresarial · <span id="anio"></span></small>
+      </footer>
+    </main>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: AGREGAR / EDITAR MIEMBRO -->
+  <!-- =============================================================== -->
+  <div class="modal fade" id="modalAgregarMiembro" tabindex="-1" aria-labelledby="modalMiembroTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="h5 modal-title fw-bold" id="modalMiembroTitulo">Registrar Nuevo Miembro</h2>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formMiembro">
+          <input type="hidden" id="miembroId" value="">
+          <div class="modal-body p-4">
+
+            <!-- Alerta de conflicto de exclusividad de giro -->
+            <div id="alertaExclusividad" class="alert alert-danger py-2 d-none" role="alert">
+              <i class="bi bi-exclamation-octagon-fill me-2"></i>
+              <span id="mensajeExclusividad">Giro ya ocupado.</span>
+            </div>
+
+            <div class="mb-3">
+              <label for="inputNombre" class="form-label small fw-semibold">Nombre Completo *</label>
+              <input type="text" class="form-control" id="inputNombre" placeholder="Ej. Roberto Morales" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="inputGiro" class="form-label small fw-semibold">Giro Comercial Exclusivo *</label>
+              <select class="form-select" id="inputGiro" required>
+                <option value="">Seleccionar categoría empresarial...</option>
+              </select>
+              <div class="form-text small text-muted">Un giro no puede repetirse entre miembros activos del capítulo.</div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-md-6">
+                <label for="inputEmpresa" class="form-label small fw-semibold">Empresa / Negocio *</label>
+                <input type="text" class="form-control" id="inputEmpresa" placeholder="Ej. Morales Consultores" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="inputRol" class="form-label small fw-semibold">Rol Asignado *</label>
+                <select class="form-select" id="inputRol" required>
+                  <option value="Miembro">Miembro</option>
+                  <option value="Coordinador">Coordinador</option>
+                  <option value="Administrador">Administrador</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-md-6">
+                <label for="inputEmail" class="form-label small fw-semibold">Correo Electrónico *</label>
+                <input type="email" class="form-control" id="inputEmail" placeholder="correo@empresa.com" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="inputTelefono" class="form-label small fw-semibold">Teléfono *</label>
+                <input type="tel" class="form-control" id="inputTelefono" placeholder="443-123-4567" required>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-md-6">
+                <label for="inputFechaIngreso" class="form-label small fw-semibold">Fecha de Ingreso *</label>
+                <input type="date" class="form-control" id="inputFechaIngreso" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="inputEstatus" class="form-label small fw-semibold">Estatus Inicial *</label>
+                <select class="form-select" id="inputEstatus" required>
+                  <option value="Activo">Activo</option>
+                  <option value="Suspendido">Suspendido</option>
+                  <option value="Baja">Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label for="inputOriginador" class="form-label small fw-semibold">Socio Originador / Invitó *</label>
+              <select class="form-select" id="inputOriginador" required>
+                <option value="">Selecciona quién invitó al miembro...</option>
+              </select>
+              <div class="form-text small text-muted">Abona al cumplimiento de la meta anual de 1 nuevo socio por año.</div>
+            </div>
+
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold" id="btnGuardarMiembro">
+              <i class="bi bi-check-lg me-1"></i> Guardar Miembro
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: CAMBIO DE ESTATUS / SUSPENDER / BAJA -->
+  <!-- =============================================================== -->
+  <div class="modal fade" id="modalEstatus" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-warning-subtle text-dark">
+          <h2 class="h5 modal-title fw-bold">Modificar Estatus de Membresía</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p>Vas a modificar el estatus del socio <strong id="estatusNombreMiembro">...</strong>.</p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Selecciona el nuevo estatus:</label>
+            <select class="form-select" id="selectNuevoEstatus">
+              <option value="Activo">Activo (Mantiene o reclama exclusividad de giro)</option>
+              <option value="Suspendido">Suspendido (Retiene giro temporalmente)</option>
+              <option value="Baja">Baja Definitiva (LIBERA el giro comercial)</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Motivo del cambio:</label>
+            <textarea class="form-control" id="motivoEstatus" rows="2" placeholder="Ej. Inasistencias consecutivas, renuncia voluntaria..."></textarea>
+          </div>
+          <div class="alert alert-warning py-2 small mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            Al marcar en <strong>Baja</strong>, la categoría comercial queda disponible inmediatamente para otros postulantes.
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-warning fw-semibold" id="btnConfirmarEstatus">
+            Aplicar Cambio de Estatus
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: DETALLES DEL MIEMBRO                                     -->
+  <!-- =============================================================== -->
+  <div class="modal fade" id="modalDetalleMiembro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h2 class="h5 modal-title fw-bold text-dark">Ficha del Socio</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4" id="contenidoDetalleMiembro">
+          <!-- Dinámico -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/components/header.js"></script>
+  <script src="assets/js/components/sidebar.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    let miembroSeleccionadoId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarFiltrosGiros();
+      cargarOriginadoresSelect();
+      renderizarTablaMiembros();
+
+      // Listeners de filtros
+      document.getElementById('filtroGiro').addEventListener('change', renderizarTablaMiembros);
+      document.getElementById('filtroEstatus').addEventListener('change', renderizarTablaMiembros);
+      document.getElementById('buscadorMiembros').addEventListener('input', renderizarTablaMiembros);
+      document.getElementById('btnLimpiarFiltros').addEventListener('click', () => {
+        document.getElementById('filtroGiro').value = '';
+        document.getElementById('filtroEstatus').value = '';
+        document.getElementById('buscadorMiembros').value = '';
+        renderizarTablaMiembros();
+      });
+
+      // Submit form miembro
+      document.getElementById('formMiembro').addEventListener('submit', guardarMiembroHandler);
+      document.getElementById('btnConfirmarEstatus').addEventListener('click', aplicarCambioEstatusHandler);
+
+      // Limpiar modal al abrir para nuevo
+      const modalAgregarEl = document.getElementById('modalAgregarMiembro');
+      modalAgregarEl.addEventListener('show.bs.modal', (e) => {
+        if (!miembroSeleccionadoId) {
+          document.getElementById('modalMiembroTitulo').textContent = 'Registrar Nuevo Miembro';
+          document.getElementById('miembroId').value = '';
+          document.getElementById('formMiembro').reset();
+          document.getElementById('inputFechaIngreso').value = new Date().toISOString().split('T')[0];
+          document.getElementById('alertaExclusividad').classList.add('d-none');
+        }
+      });
+      modalAgregarEl.addEventListener('hidden.bs.modal', () => {
+        miembroSeleccionadoId = null;
+      });
+    });
+
+    function cargarFiltrosGiros() {
+      if (!window.NetxStore) return;
+      const categorias = window.NetxStore.getCategories();
+      const selectFiltro = document.getElementById('filtroGiro');
+      const selectModal = document.getElementById('inputGiro');
+
+      categorias.forEach(cat => {
+        const opt1 = document.createElement('option');
+        opt1.value = cat;
+        opt1.textContent = cat;
+        selectFiltro.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = cat;
+        opt2.textContent = cat;
+        selectModal.appendChild(opt2);
+      });
+    }
+
+    function cargarOriginadoresSelect() {
+      if (!window.NetxStore) return;
+      const members = window.NetxStore.getMembers();
+      const select = document.getElementById('inputOriginador');
+      select.innerHTML = '<option value="">Selecciona quién invitó al miembro...</option><option value="Fundador">Socio Fundador / Directiva</option>';
+
+      members.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.nombre;
+        opt.textContent = `${m.nombre} (${m.empresa})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderizarTablaMiembros() {
+      if (!window.NetxStore) return;
+      const tbody = document.getElementById('tablaMiembros');
+      const filtroGiro = document.getElementById('filtroGiro').value;
+      const filtroEstatus = document.getElementById('filtroEstatus').value;
+      const buscar = document.getElementById('buscadorMiembros').value.trim().toLowerCase();
+
+      let miembros = window.NetxStore.getMembers();
+
+      if (filtroGiro) {
+        miembros = miembros.filter(m => m.giro === filtroGiro);
+      }
+      if (filtroEstatus) {
+        miembros = miembros.filter(m => m.estatus === filtroEstatus);
+      }
+      if (buscar) {
+        miembros = miembros.filter(m =>
+          m.nombre.toLowerCase().includes(buscar) ||
+          m.empresa.toLowerCase().includes(buscar) ||
+          m.email.toLowerCase().includes(buscar) ||
+          m.giro.toLowerCase().includes(buscar)
+        );
+      }
+
+      document.getElementById('contadorMiembros').textContent = `Mostrando ${miembros.length} miembros registrados`;
+
+      if (miembros.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No se encontraron miembros con los filtros seleccionados.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = miembros.map(m => {
+        let badgeClase = 'badge-activo';
+        if (m.estatus === 'Suspendido') badgeClase = 'badge-suspendido';
+        if (m.estatus === 'Baja') badgeClase = 'badge-baja';
+
+        return `
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="avatar" style="width: 32px; height: 32px; font-size: 0.85rem;">${m.avatar || m.nombre.charAt(0)}</span>
+                <div>
+                  <div class="fw-bold text-dark">${m.nombre}</div>
+                  <small class="text-muted">${m.empresa} · <span class="badge bg-light text-secondary border">${m.rol}</span></small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border px-2 py-1">${m.giro}</span>
+            </td>
+            <td>
+              <div class="small"><i class="bi bi-envelope text-muted me-1"></i>${m.email}</div>
+              <div class="small text-muted"><i class="bi bi-telephone text-muted me-1"></i>${m.telefono}</div>
+            </td>
+            <td class="small text-muted">${m.fechaIngreso}</td>
+            <td>
+              <small class="text-muted"><i class="bi bi-person-check text-success me-1"></i>${m.originador || 'Fundador'}</small>
+            </td>
+            <td>
+              <span class="badge ${badgeClase} px-2 py-1">[${m.estatus}]</span>
+            </td>
+            <td class="text-end pe-3">
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-secondary" onclick="verDetalleMiembro(${m.id})" title="Ver ficha">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick="editarMiembro(${m.id})" title="Editar datos">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-outline-warning" onclick="abrirModalEstatus(${m.id})" title="Cambiar estatus / Baja">
+                  <i class="bi bi-sliders"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function guardarMiembroHandler(e) {
+      e.preventDefault();
+      const idVal = document.getElementById('miembroId').value;
+      const alerta = document.getElementById('alertaExclusividad');
+      const alertaMsg = document.getElementById('mensajeExclusividad');
+
+      const datos = {
+        id: idVal ? Number(idVal) : null,
+        nombre: document.getElementById('inputNombre').value.trim(),
+        giro: document.getElementById('inputGiro').value,
+        empresa: document.getElementById('inputEmpresa').value.trim(),
+        rol: document.getElementById('inputRol').value,
+        email: document.getElementById('inputEmail').value.trim(),
+        telefono: document.getElementById('inputTelefono').value.trim(),
+        fechaIngreso: document.getElementById('inputFechaIngreso').value,
+        estatus: document.getElementById('inputEstatus').value,
+        originador: document.getElementById('inputOriginador').value
+      };
+
+      try {
+        window.NetxStore.saveMember(datos);
+        alerta.classList.add('d-none');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarMiembro'));
+        if (modal) modal.hide();
+        renderizarTablaMiembros();
+        window.NetxAlert(idVal ? 'Miembro actualizado exitosamente.' : 'Nuevo miembro registrado con giro exclusivo.');
+      } catch (err) {
+        alerta.classList.remove('d-none');
+        alertaMsg.textContent = err.message;
+      }
+    }
+
+    function editarMiembro(id) {
+      miembroSeleccionadoId = id;
+      const m = window.NetxStore.getMemberById(id);
+      if (!m) return;
+
+      document.getElementById('modalMiembroTitulo').textContent = 'Editar Datos del Miembro';
+      document.getElementById('miembroId').value = m.id;
+      document.getElementById('inputNombre').value = m.nombre;
+      document.getElementById('inputGiro').value = m.giro;
+      document.getElementById('inputEmpresa').value = m.empresa;
+      document.getElementById('inputRol').value = m.rol || 'Miembro';
+      document.getElementById('inputEmail').value = m.email;
+      document.getElementById('inputTelefono').value = m.telefono;
+      document.getElementById('inputFechaIngreso').value = m.fechaIngreso;
+      document.getElementById('inputEstatus').value = m.estatus;
+      document.getElementById('inputOriginador').value = m.originador || 'Fundador';
+      document.getElementById('alertaExclusividad').classList.add('d-none');
+
+      const modal = new bootstrap.Modal(document.getElementById('modalAgregarMiembro'));
+      modal.show();
+    }
+
+    function abrirModalEstatus(id) {
+      miembroSeleccionadoId = id;
+      const m = window.NetxStore.getMemberById(id);
+      if (!m) return;
+
+      document.getElementById('estatusNombreMiembro').textContent = `${m.nombre} (${m.giro})`;
+      document.getElementById('selectNuevoEstatus').value = m.estatus;
+      document.getElementById('motivoEstatus').value = '';
+
+      const modal = new bootstrap.Modal(document.getElementById('modalEstatus'));
+      modal.show();
+    }
+
+    function aplicarCambioEstatusHandler() {
+      if (!miembroSeleccionadoId) return;
+      const nuevoEstatus = document.getElementById('selectNuevoEstatus').value;
+      const motivo = document.getElementById('motivoEstatus').value;
+
+      try {
+        window.NetxStore.cambiarEstatusMiembro(miembroSeleccionadoId, nuevoEstatus, motivo);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEstatus'));
+        if (modal) modal.hide();
+        renderizarTablaMiembros();
+        window.NetxAlert(`Estatus modificado a [${nuevoEstatus}] correctamente.`);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function verDetalleMiembro(id) {
+      const m = window.NetxStore.getMemberById(id);
+      if (!m) return;
+
+      const cont = document.getElementById('contenidoDetalleMiembro');
+      cont.innerHTML = `
+        <div class="text-center mb-4">
+          <span class="avatar mx-auto mb-2" style="width: 56px; height: 56px; font-size: 1.5rem;">${m.avatar || m.nombre.charAt(0)}</span>
+          <h3 class="h5 fw-bold mb-1">${m.nombre}</h3>
+          <p class="text-muted mb-1">${m.empresa}</p>
+          <span class="badge ${m.estatus === 'Activo' ? 'badge-activo' : m.estatus === 'Suspendido' ? 'badge-suspendido' : 'badge-baja'} px-3 py-1">
+            ${m.estatus}
+          </span>
+        </div>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Giro Comercial Exclusivo:</span>
+            <span class="fw-semibold">${m.giro}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Rol en el Capítulo:</span>
+            <span class="fw-semibold">${m.rol}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Correo electrónico:</span>
+            <span class="fw-semibold">${m.email}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Teléfono de contacto:</span>
+            <span class="fw-semibold">${m.telefono}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Fecha de Ingreso:</span>
+            <span class="fw-semibold">${m.fechaIngreso}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Socio Originador:</span>
+            <span class="fw-semibold text-primary">${m.originador || 'Fundador'}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Asistencias consecutivas:</span>
+            <span class="badge bg-success">${m.asistenciasConsecutivas || 0} sesiones</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Inasistencias sin suplente:</span>
+            <span class="badge ${m.faltasSinSuplente >= 2 ? 'bg-danger' : 'bg-light text-dark'}">${m.faltasSinSuplente || 0}</span>
+          </li>
+        </ul>
+      `;
+      const modal = new bootstrap.Modal(document.getElementById('modalDetalleMiembro'));
+      modal.show();
+    }
+  </script>
+</body>
+</html>
+
+

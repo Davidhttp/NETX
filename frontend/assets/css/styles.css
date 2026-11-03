@@ -1,0 +1,783 @@
+/* ==========================================================
+   NETX · styles.css
+   Diseño Unificado Inspirado en Apple (Human Interface Guidelines)
+   Azul Institucional #1F4E79, Glassmorphism, Sombras Suaves y Bordes Redondeados
+   ========================================================== */
+
+:root {
+  /* Azul Institucional NETX */
+  --netx-primary:        #1F4E79;
+  --netx-primary-hover:  #163a5c;
+  --netx-primary-light:  #2b6cb0;
+  --netx-primary-subtle: rgba(31, 78, 121, 0.08);
+  --netx-primary-border: rgba(31, 78, 121, 0.2);
+  --netx-gradient:       linear-gradient(135deg, #1F4E79 0%, #2b6cb0 100%);
+
+  /* Paleta Semántica Apple */
+  --netx-accent:         #c59b27;
+  --netx-success:        #10b981;
+  --netx-warning:        #f59e0b;
+  --netx-danger:         #ef4444;
+  --netx-info:           #0284c7;
+
+  /* Neutros y Superficies */
+  --netx-bg:             #F4F6F9;
+  --netx-surface:        #ffffff;
+  --netx-border:         rgba(226, 232, 240, 0.85);
+  --netx-border-light:   rgba(255, 255, 255, 0.8);
+  --netx-text:           #0f172a;
+  --netx-muted:          #475569;
+  --netx-subtle:         #64748b;
+
+  /* Medidas de Layout */
+  --header-h:            64px;
+  --sidebar-w:           260px;
+  --sidebar-w-min:       74px;
+  --bottom-nav-h:        64px;
+
+  /* Radios Redondeados Estilo Apple */
+  --radius-xs:           8px;
+  --radius-sm:           12px;
+  --radius-md:           16px;
+  --radius-lg:           20px;
+  --radius-xl:           26px;
+  --radius-pill:         9999px;
+
+  /* Sombras Difusas Multinivel */
+  --shadow-xs:           0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-sm:           0 4px 12px -2px rgba(31, 78, 121, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md:           0 8px 24px -3px rgba(31, 78, 121, 0.08), 0 3px 8px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg:           0 18px 36px -4px rgba(31, 78, 121, 0.12), 0 6px 14px -2px rgba(0, 0, 0, 0.04);
+  --shadow-hover:        0 14px 30px -4px rgba(31, 78, 121, 0.16), 0 6px 14px -2px rgba(0, 0, 0, 0.05);
+
+  /* Tipografía */
+  --font-base: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Integración con Bootstrap */
+  --bs-primary:          var(--netx-primary);
+  --bs-primary-rgb:      31, 78, 121;
+  --bs-body-font-family: var(--font-base);
+  --bs-body-color:       var(--netx-text);
+  --bs-body-bg:          var(--netx-bg);
+  --bs-link-color:       var(--netx-primary);
+  --bs-border-color:     var(--netx-border);
+
+  /* Transiciones Fluidas */
+  --transition-fluid:    all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================
+   RESET Y BASE
+   ========================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-base);
+  background-color: var(--netx-bg);
+  color: var(--netx-text);
+  padding-top: var(--header-h);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (max-width: 991.98px) {
+  body {
+    padding-bottom: var(--bottom-nav-h);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--netx-text);
+  letter-spacing: -0.02em;
+}
+
+p, span, li, button, input {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.text-muted { color: var(--netx-muted) !important; }
+.text-institutional { color: var(--netx-primary) !important; }
+.bg-institutional { background-color: var(--netx-primary) !important; color: #ffffff !important; }
+
+:focus-visible {
+  outline: 3px solid rgba(31, 78, 121, 0.4);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 2000;
+  background: var(--netx-surface);
+  padding: .5rem .75rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================
+   HEADER UNIVERSAL (#1F4E79 CON GLASSMORPHISM)
+   ========================================================== */
+.app-header {
+  height: var(--header-h);
+  background: rgba(31, 78, 121, 0.96);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
+  color: #ffffff;
+  z-index: 1040;
+  transition: var(--transition-fluid);
+}
+
+/* Zona izquierda del Header */
+.header-start {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  height: 100% !important;
+}
+
+/* Marca NETX */
+.brand {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.25rem !important;
+  letter-spacing: -0.02em !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.brand:hover { color: #ffffff !important; }
+
+.brand-mark {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 9px !important;
+  background: #ffffff !important;
+  color: var(--netx-primary) !important;
+  font-size: 1.2rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.brand-text {
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+}
+
+/* Texto Oficial: Capítulo Morelia */
+.chapter-container {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 26px !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.28) !important;
+  padding-left: 0.85rem !important;
+  margin-left: 0.35rem !important;
+  line-height: 1 !important;
+}
+.chapter-name {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+.pulse-dot {
+  width: 8px !important;
+  height: 8px !important;
+  min-width: 8px !important;
+  min-height: 8px !important;
+  border-radius: 50% !important;
+  background-color: var(--netx-success) !important;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7) !important;
+  animation: pulseGreen 2s infinite !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  margin-right: 0.5rem !important;
+}
+@keyframes pulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Botones en Header */
+.app-header .btn-icon {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  transition: var(--transition-fluid);
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+.app-header .btn-icon:hover {
+  background: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+  transform: scale(1.04);
+}
+.app-header .btn-icon i {
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.app-header .btn-icon i::before {
+  vertical-align: 0 !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Desplegables del Header */
+.app-header .dropdown-menu {
+  margin-top: 10px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  transform-origin: top right;
+  animation: appleDropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes appleDropdownFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Botón Usuario / Avatar en Header */
+.app-header .btn-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 4px 12px 4px 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  cursor: pointer;
+  transition: var(--transition-fluid);
+  text-decoration: none;
+}
+.app-header .btn-user:hover,
+.app-header .btn-user:focus {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+.app-header .btn-user::after {
+  display: none !important;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  overflow: hidden;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================================================
+   SIDEBAR CONSISTENTE
+   ========================================================== */
+.app-shell {
+  display: flex;
+  min-height: calc(100vh - var(--header-h));
+}
+
+.app-sidebar {
+  background: var(--netx-surface);
+  border-right: 1px solid var(--netx-border);
+  transition: var(--transition-fluid);
+}
+
+@media (min-width: 992px) {
+  .app-sidebar {
+    flex: 0 0 var(--sidebar-w);
+    width: var(--sidebar-w);
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+  }
+
+  .sidebar-collapsed .app-sidebar {
+    flex-basis: var(--sidebar-w-min);
+    width: var(--sidebar-w-min);
+  }
+  .sidebar-collapsed .nav-text { display: none; }
+  .sidebar-collapsed .nav-group { display: none; }
+  .sidebar-collapsed .side-nav .nav-link { justify-content: center; padding-inline: 0; }
+  .sidebar-collapsed .side-nav .nav-link i { margin: 0; font-size: 1.35rem; }
+}
+
+.side-nav {
+  padding: 1rem 0.65rem;
+}
+
+.nav-group {
+  list-style: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--netx-subtle);
+  padding: 0.75rem 0.85rem 0.35rem 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.side-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.68rem 0.95rem;
+  border-radius: var(--radius-md);
+  color: var(--netx-muted);
+  font-weight: 600;
+  font-size: 0.94rem;
+  text-decoration: none;
+  transition: var(--transition-fluid);
+  min-height: 44px;
+}
+.side-nav .nav-link i {
+  font-size: 1.15rem;
+  color: var(--netx-subtle);
+  transition: var(--transition-fluid);
+}
+
+/* Efectos Hover del Menú Lateral */
+.side-nav .nav-link:hover:not(.active) {
+  background: rgba(31, 78, 121, 0.07);
+  color: var(--netx-primary);
+  transform: translateX(3px);
+}
+.side-nav .nav-link:hover:not(.active) i {
+  color: var(--netx-primary);
+}
+
+/* Elemento Activo Resaltado en Azul Institucional #1F4E79 */
+.side-nav .nav-link.active {
+  background: var(--netx-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(31, 78, 121, 0.35) !important;
+}
+.side-nav .nav-link.active i {
+  color: #ffffff !important;
+}
+
+/* ==========================================================
+   BARRA DE NAVEGACIÓN INFERIOR MÓVIL (BOTTOM NAVIGATION)
+   ========================================================== */
+.app-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-h);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-top: 1px solid var(--netx-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1030;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--netx-subtle);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  gap: 2px;
+  padding: 6px 0;
+  transition: var(--transition-fluid);
+}
+.bottom-nav-item i {
+  font-size: 1.25rem;
+}
+.bottom-nav-item.active,
+.bottom-nav-item:hover {
+  color: var(--netx-primary);
+}
+
+/* ==========================================================
+   ÁREA DE TRABAJO (MAIN) · TARJETAS, TABLAS Y MODALES
+   Fondo gris claro #F4F6F9, bordes muy redondeados y cero bordes duros
+   ========================================================== */
+.app-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  background-color: var(--netx-bg);
+  display: flex;
+  flex-direction: column;
+}
+.app-main > .container-fluid {
+  flex: 1 0 auto;
+}
+
+/* Tarjetas (Cards) Apple */
+.card {
+  background: var(--netx-surface);
+  border: 1px solid var(--netx-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fluid);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(31, 78, 121, 0.2);
+}
+
+.card-link {
+  color: inherit;
+  text-decoration: none;
+}
+.card-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(31, 78, 121, 0.3);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Tarjetas de Métricas Ejecutivas (Stat Cards) */
+.stat-card {
+  padding: 1.25rem 1.4rem;
+  border-radius: var(--radius-lg);
+  background: var(--netx-surface);
+  border: 1px solid var(--netx-border);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  transition: var(--transition-fluid);
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+  border-color: rgba(31, 78, 121, 0.2);
+}
+
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  background: var(--netx-primary-subtle);
+  color: var(--netx-primary);
+}
+
+.stat-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--netx-text);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--netx-muted);
+  margin-bottom: 2px;
+}
+
+/* Tablas con Bordes Suaves y Redondeados */
+.table-responsive {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f8fafc;
+  color: var(--netx-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--netx-border);
+}
+
+.table tbody td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  font-size: 0.92rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(31, 78, 121, 0.025);
+}
+
+/* ==========================================================
+   BOTONES E INPUTS CON EFECTOS MODERNOS
+   ========================================================== */
+.btn-primary {
+  background: var(--netx-primary);
+  border-color: var(--netx-primary);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 1.35rem;
+  box-shadow: 0 3px 12px rgba(31, 78, 121, 0.28);
+  transition: var(--transition-fluid);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 40px;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: var(--netx-primary-hover);
+  border-color: var(--netx-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(31, 78, 121, 0.38);
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-outline-primary {
+  border-color: var(--netx-primary);
+  color: var(--netx-primary);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 1.25rem;
+  transition: var(--transition-fluid);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 40px;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background: var(--netx-primary-subtle);
+  border-color: var(--netx-primary);
+  color: var(--netx-primary-hover);
+  box-shadow: 0 4px 12px rgba(31, 78, 121, 0.12);
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  min-height: 34px;
+  padding: 0.35rem 0.95rem;
+  font-size: 0.85rem;
+}
+
+/* Inputs de Formularios Responsivos */
+.form-control, .form-select {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.94rem;
+  color: var(--netx-text);
+  background-color: #ffffff;
+  transition: var(--transition-fluid);
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--netx-primary);
+  box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.15);
+}
+
+/* Modales Apple */
+.modal-content {
+  border-radius: var(--radius-xl);
+  border: none;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+.modal-header {
+  border-bottom: 1px solid var(--netx-border);
+  padding: 1.25rem 1.5rem;
+}
+.modal-footer {
+  border-top: 1px solid var(--netx-border);
+  padding: 1rem 1.5rem;
+}
+
+/* Menús Desplegables Apple */
+.dropdown-menu {
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+}
+.dropdown-item {
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.92rem;
+  color: var(--netx-text);
+  transition: var(--transition-fluid);
+}
+.dropdown-item:hover {
+  background-color: var(--netx-primary-subtle);
+  color: var(--netx-primary);
+  transform: translateX(2px);
+}
+
+/* ==========================================================
+   ESTILOS DE MÓDULOS ESPECÍFICOS (Cronómetro, Pipeline, Login)
+   ========================================================== */
+.timer-container {
+  background: #ffffff;
+  border: 1px solid var(--netx-border);
+  border-radius: var(--radius-xl);
+  padding: 1.85rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+.timer-display {
+  font-size: 4rem;
+  font-family: -apple-system, system-ui, monospace;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--netx-success);
+  transition: color 0.3s ease;
+}
+.timer-display.timer-warning {
+  color: #e67e22 !important;
+  animation: pulse-warn 1s infinite;
+}
+.timer-display.timer-danger {
+  color: #dc3545 !important;
+  animation: pulse-danger 0.6s infinite;
+}
+
+/* Pipeline Embudo */
+.pipeline-board {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+.pipeline-col {
+  flex: 0 0 280px;
+  background: #f1f5f9;
+  border-radius: var(--radius-lg);
+  padding: 0.85rem;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+.pipeline-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  border: 1px solid var(--netx-border);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  transition: var(--transition-fluid);
+}
+.pipeline-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(31, 78, 121, 0.25);
+}
+
+/* Login */
+.login-screen-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--netx-bg);
+  padding: 1.5rem;
+}
+.login-box {
+  width: 100%;
+  max-width: 880px;
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--netx-border);
+}
+.login-brand-panel {
+  background: var(--netx-gradient);
+  color: #ffffff;
+  padding: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Pie de página */
+.app-footer {
+  border-top: 1px solid var(--netx-border);
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

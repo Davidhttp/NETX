@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi Perfil · NETX</title>
+  <meta name="description" content="Perfil del usuario, datos comerciales y métricas personales de participación.">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Header -->
+  <netx-header></netx-header>
+
+  <div class="app-shell">
+    <!-- Sidebar con active="perfil" -->
+    <netx-sidebar active="perfil"></netx-sidebar>
+
+    <main class="app-main" id="contenido" tabindex="-1">
+      <div class="container-fluid p-3 p-lg-4">
+
+        <!-- Encabezado de página -->
+        <div class="page-head mb-4">
+          <h1 class="h3 mb-0 fw-bold text-dark">Perfil de Usuario</h1>
+          <p class="text-muted small mb-0">Información de la cuenta, giro de negocio acreditado y desempeño en el capítulo.</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Columna Izquierda: Tarjeta de Identidad y Estadísticas -->
+          <div class="col-12 col-lg-4">
+            <div class="card p-4 text-center mb-4">
+              <div class="avatar mx-auto mb-3" id="perfilAvatar" style="width: 80px; height: 80px; font-size: 2.2rem;">
+                U
+              </div>
+              <h2 class="h5 fw-bold text-dark mb-1" id="perfilNombre">Nombre de Usuario</h2>
+              <p class="text-muted small mb-2" id="perfilEmpresa">Empresa</p>
+              
+              <div class="d-flex justify-content-center gap-2 mb-3">
+                <span class="badge bg-primary" id="perfilRol">Rol</span>
+                <span class="badge badge-activo" id="perfilEstatus">Activo</span>
+              </div>
+
+              <div class="p-3 bg-light rounded text-start small">
+                <div class="mb-2">
+                  <span class="text-muted d-block">Giro Comercial Exclusivo:</span>
+                  <strong class="text-dark" id="perfilGiro">Categoría</strong>
+                </div>
+                <div class="mb-2">
+                  <span class="text-muted d-block">Fecha de Ingreso:</span>
+                  <span id="perfilFechaIngreso">2026-01-01</span>
+                </div>
+                <div>
+                  <span class="text-muted d-block">Socio Originador:</span>
+                  <span class="text-primary fw-semibold" id="perfilOriginador">Fundador</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selector de Cambio Rápido de Cuenta para Pruebas -->
+            <div class="card p-3 bg-light border">
+              <h3 class="h6 fw-bold text-dark mb-2">
+                <i class="bi bi-arrow-repeat text-primary me-1"></i> Probar Otra Cuenta (Demo)
+              </h3>
+              <p class="small text-muted mb-3">
+                Cambia de identidad en un clic para verificar los diferentes flujos y permisos:
+              </p>
+              <div class="d-grid gap-2">
+                <button class="btn btn-outline-primary btn-sm text-start" onclick="window.NetxComponents.cambiarRolDemo('Administrador')">
+                  <i class="bi bi-shield-check me-2"></i> Diego Méndez (Administrador)
+                </button>
+                <button class="btn btn-outline-warning text-dark btn-sm text-start" onclick="window.NetxComponents.cambiarRolDemo('Coordinador')">
+                  <i class="bi bi-clock-history me-2"></i> Brayan Reyes (Coordinador)
+                </button>
+                <button class="btn btn-outline-success btn-sm text-start" onclick="window.NetxComponents.cambiarRolDemo('Miembro')">
+                  <i class="bi bi-person me-2"></i> Juan Pérez (Miembro)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Métricas Personales y Formulario -->
+          <div class="col-12 col-lg-8">
+            <!-- 4 Métricas Personales -->
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-sm-3">
+                <div class="card p-3 text-center h-100">
+                  <div class="fs-4 text-primary mb-1"><i class="bi bi-send-check"></i></div>
+                  <div class="fw-bold fs-5 text-dark" id="statMisReferidos">4</div>
+                  <small class="text-muted" style="font-size: 0.75rem;">Referidos Emitidos</small>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <div class="card p-3 text-center h-100">
+                  <div class="fs-4 text-info mb-1"><i class="bi bi-inbox-fill"></i></div>
+                  <div class="fw-bold fs-5 text-dark" id="statRecibidos">3</div>
+                  <small class="text-muted" style="font-size: 0.75rem;">Referidos Recibidos</small>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <div class="card p-3 text-center h-100">
+                  <div class="fs-4 text-success mb-1"><i class="bi bi-cash-stack"></i></div>
+                  <div class="fw-bold fs-6 text-success" id="statNegocioGanado">$85,000</div>
+                  <small class="text-muted" style="font-size: 0.75rem;">Negocio Cerrado (GNC)</small>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <div class="card p-3 text-center h-100">
+                  <div class="fs-4 text-warning mb-1"><i class="bi bi-check2-circle"></i></div>
+                  <div class="fw-bold fs-5 text-dark" id="statAsistencias">100%</div>
+                  <small class="text-muted" style="font-size: 0.75rem;">Asistencia Matutina</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulario de Edición de Contacto Personal -->
+            <div class="card p-4">
+              <h3 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">
+                <i class="bi bi-pencil-square me-2 text-primary"></i>Actualizar Datos de Contacto
+              </h3>
+
+              <form id="formPerfil">
+                <div class="row g-3 mb-3">
+                  <div class="col-12 col-md-6">
+                    <label for="perfilInputNombre" class="form-label small fw-semibold">Nombre Completo</label>
+                    <input type="text" class="form-control" id="perfilInputNombre" required>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label for="perfilInputEmpresa" class="form-label small fw-semibold">Empresa / Razón Social</label>
+                    <input type="text" class="form-control" id="perfilInputEmpresa" required>
+                  </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-12 col-md-6">
+                    <label for="perfilInputEmail" class="form-label small fw-semibold">Correo Electrónico de Contacto</label>
+                    <input type="email" class="form-control" id="perfilInputEmail" required>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label for="perfilInputTel" class="form-label small fw-semibold">Teléfono Celular / WhatsApp</label>
+                    <input type="tel" class="form-control" id="perfilInputTel" required>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label small fw-semibold">Giro Comercial Registrado (Bloqueado por Directiva)</label>
+                  <input type="text" class="form-control bg-light" id="perfilInputGiroBloqueado" readonly>
+                  <div class="form-text small text-muted">
+                    El cambio de giro comercial exclusivo requiere dictamen y aprobación de la directiva del capítulo.
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                  <button type="button" class="btn btn-outline-danger" onclick="window.NetxStore.logout()">
+                    <i class="bi bi-box-arrow-right me-1"></i> Cerrar Sesión
+                  </button>
+                  <button type="submit" class="btn btn-primary fw-semibold">
+                    <i class="bi bi-check-lg me-1"></i> Guardar Cambios en Perfil
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="app-footer px-3 px-lg-4 py-3 mt-auto">
+        <small class="text-muted">NETX · Capítulo Morelia · Perfil y Cuenta de Usuario · <span id="anio"></span></small>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/components/header.js"></script>
+  <script src="assets/js/components/sidebar.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarDatosPerfil();
+
+      document.getElementById('formPerfil').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const user = window.NetxStore.getCurrentUser();
+        const updated = {
+          ...user,
+          nombre: document.getElementById('perfilInputNombre').value.trim(),
+          empresa: document.getElementById('perfilInputEmpresa').value.trim(),
+          email: document.getElementById('perfilInputEmail').value.trim(),
+          telefono: document.getElementById('perfilInputTel').value.trim()
+        };
+
+        window.NetxStore.saveMember(updated);
+        window.NetxStore.setCurrentUser(updated);
+        cargarDatosPerfil();
+        window.NetxAlert('Perfil actualizado correctamente.');
+      });
+    });
+
+    function cargarDatosPerfil() {
+      if (!window.NetxStore) return;
+      const user = window.NetxStore.getCurrentUser();
+
+      document.getElementById('perfilAvatar').textContent = user.avatar || user.nombre.charAt(0);
+      document.getElementById('perfilNombre').textContent = user.nombre;
+      document.getElementById('perfilEmpresa').textContent = user.empresa;
+      document.getElementById('perfilRol').textContent = user.rol;
+      document.getElementById('perfilEstatus').textContent = user.estatus;
+      document.getElementById('perfilGiro').textContent = user.giro;
+      document.getElementById('perfilFechaIngreso').textContent = user.fechaIngreso;
+      document.getElementById('perfilOriginador').textContent = user.originador || 'Fundador';
+
+      document.getElementById('perfilInputNombre').value = user.nombre;
+      document.getElementById('perfilInputEmpresa').value = user.empresa;
+      document.getElementById('perfilInputEmail').value = user.email;
+      document.getElementById('perfilInputTel').value = user.telefono;
+      document.getElementById('perfilInputGiroBloqueado').value = user.giro;
+
+      // Calcular métricas personales
+      const referidos = window.NetxStore.getReferrals();
+      const misEmitidos = referidos.filter(r => r.generadorId === user.id).length;
+      const misRecibidos = referidos.filter(r => r.receptorId === user.id).length;
+      const ganadoCerrado = referidos
+        .filter(r => r.receptorId === user.id && r.estado === 'Ganado')
+        .reduce((sum, r) => sum + (Number(r.montoGanado) || 0), 0);
+
+      document.getElementById('statMisReferidos').textContent = misEmitidos;
+      document.getElementById('statRecibidos').textContent = misRecibidos;
+      document.getElementById('statNegocioGanado').textContent = `$${ganadoCerrado.toLocaleString()} MXN`;
+    }
+  </script>
+</body>
+</html>
+
