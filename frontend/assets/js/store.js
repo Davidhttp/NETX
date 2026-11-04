@@ -1,8 +1,3 @@
-/**
- * NETX · store.js
- * Capa de almacenamiento y lógica de negocio en cliente (simulando persistencia local con localStorage).
- * Cumple con las reglas de negocio del documento NETX-DOC-01 y ERS v1.1.
- */
 (() => {
   'use strict';
 
@@ -445,6 +440,7 @@
     },
 
     logout() {
+      fetch('../backend/api/logout.php', { method: 'POST', credentials: 'same-origin', keepalive: true });
       localStorage.removeItem(STORAGE_KEYS.SESSION);
       window.location.href = 'login.html';
     },

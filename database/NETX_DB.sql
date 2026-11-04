@@ -1,5 +1,3 @@
-
-
 -- NETX: Base de datos inicial del Sprint 1
 -- MySQL 8.0 / Motor InnoDB
 
