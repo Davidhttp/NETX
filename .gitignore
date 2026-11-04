@@ -147,3 +147,7 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# NETX - Configuracion local de MySQL
+# No subir credenciales personales a GitHub
+/backend/config/config.php
