@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reglas del Capítulo · NETX</title>
+  <meta name="description" content="Configuración paramétrica de reglas de gobernanza del capítulo NETX.">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Header -->
+  <netx-header></netx-header>
+
+  <div class="app-shell">
+    <!-- Sidebar con active="reglas" -->
+    <netx-sidebar active="reglas"></netx-sidebar>
+
+    <main class="app-main" id="contenido" tabindex="-1">
+      <div class="container-fluid p-3 p-lg-4">
+
+        <!-- Encabezado de página -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center page-head gap-2">
+          <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">Reglas del Capítulo</h1>
+            <p class="text-muted small mb-0">Parámetros numéricos y umbrales de gobernanza del capítulo.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnRestablecerReglas">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Restablecer Valores Base
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('formReglas').requestSubmit()">
+              <i class="bi bi-save me-1"></i> Guardar Parámetros
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner informativo ERS -->
+        <div class="alert alert-info border-0 d-flex align-items-center gap-2 py-2 mb-4">
+          <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+          <div class="small">
+            Estos parámetros gobiernan las validaciones automáticas del sistema para la cuota semanal de referidos, control de faltas y el cronómetro de la reunión matutina.
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Formulario Principal de Configuración -->
+          <div class="col-12 col-lg-8">
+            <div class="card p-4">
+              <form id="formReglas">
+
+                <!-- Sección 1: Cuotas de Referidos y Crecimiento -->
+                <div class="mb-4">
+                  <h2 class="h6 fw-bold text-primary border-bottom pb-2 mb-3">
+                    <i class="bi bi-arrow-left-right me-2"></i>1. Cuotas de Referidos y Crecimiento
+                  </h2>
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="cuotaReferidos" class="form-label fw-semibold small">
+                        Cuota Semanal Mínima de Referidos <span class="text-muted fw-normal">(referidos / semana)</span> *
+                      </label>
+                      <input type="number" class="form-control" id="cuotaReferidos" min="1" max="10" placeholder="Ej. 2" required>
+                      <div class="form-text small text-muted">Mínimo sugerido: 2 referidos semanales por socio.</div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <label for="metaIngresoAnual" class="form-label fw-semibold small">
+                        Meta Anual de Nuevos Miembros <span class="text-muted fw-normal">(socios / año)</span> *
+                      </label>
+                      <input type="number" class="form-control" id="metaIngresoAnual" min="1" max="10" placeholder="Ej. 1" required>
+                      <div class="form-text small text-muted">Mínimo sugerido: 1 nuevo socio incorporado por miembro al año.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sección 2: Asistencia y Cumplimiento -->
+                <div class="mb-4">
+                  <h2 class="h6 fw-bold text-primary border-bottom pb-2 mb-3">
+                    <i class="bi bi-person-x me-2"></i>2. Asistencia y Cumplimiento
+                  </h2>
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="inasistenciasPermitidas" class="form-label fw-semibold small">
+                        Tope Máximo de Inasistencias sin Suplente <span class="text-muted fw-normal">(faltas permitidas)</span> *
+                      </label>
+                      <input type="number" class="form-control" id="inasistenciasPermitidas" min="1" max="5" placeholder="Ej. 2" required>
+                      <div class="form-text small text-muted">Superar este umbral activa advertencia de revisión directiva.</div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <label class="form-label fw-semibold small">Regla de Suplencia en Sesiones</label>
+                      <div class="p-2 border rounded bg-light small text-muted">
+                        <i class="bi bi-check2-circle text-success me-1"></i> Asistir con un suplente calificado evita falta si se registra su nombre y contacto.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sección 3: Duración y Tiempos de Reunión -->
+                <div class="mb-4">
+                  <h2 class="h6 fw-bold text-primary border-bottom pb-2 mb-3">
+                    <i class="bi bi-stopwatch me-2"></i>3. Tiempos de Pitch y Presentaciones
+                  </h2>
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="duracionPitch" class="form-label fw-semibold small">
+                        Duración del Pitch Semanal <span class="text-muted fw-normal">(en segundos)</span> *
+                      </label>
+                      <input type="number" class="form-control" id="duracionPitch" min="30" max="300" step="10" placeholder="Ej. 120" required>
+                      <div class="form-text small text-muted">Tiempo asignado: 120 segundos (2 minutos por miembro).</div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <label for="duracionPresentacion" class="form-label fw-semibold small">
+                        Duración de Presentación Estelar <span class="text-muted fw-normal">(en minutos)</span> *
+                      </label>
+                      <input type="number" class="form-control" id="duracionPresentacion" min="5" max="30" placeholder="Ej. 10" required>
+                      <div class="form-text small text-muted">Tiempo asignado: 10 minutos por presentación central.</div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <label for="presentacionesPorReunion" class="form-label fw-semibold small">
+                        Presentaciones Estelares por Reunión <span class="text-muted fw-normal">(cantidad de ponentes)</span> *
+                      </label>
+                      <input type="number" class="form-control" id="presentacionesPorReunion" min="1" max="4" placeholder="Ej. 2" required>
+                      <div class="form-text small text-muted">2 miembros activos rotan en cada sesión matutina.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sección 4: Datos Institucionales del Capítulo -->
+                <div>
+                  <h2 class="h6 fw-bold text-primary border-bottom pb-2 mb-3">
+                    <i class="bi bi-building me-2"></i>4. Parámetros Operativos del Capítulo
+                  </h2>
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="nombreCapitulo" class="form-label fw-semibold small">Nombre del Capítulo *</label>
+                      <input type="text" class="form-control" id="nombreCapitulo" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label for="horarioHabitual" class="form-label fw-semibold small">Horario de Sesión *</label>
+                      <input type="text" class="form-control" id="horarioHabitual" required>
+                    </div>
+                    <div class="col-12">
+                      <label for="sedeHabitual" class="form-label fw-semibold small">Sede Habitual de Reunión *</label>
+                      <input type="text" class="form-control" id="sedeHabitual" required>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                  <button type="submit" class="btn btn-primary fw-semibold px-4">
+                    <i class="bi bi-check-circle me-1"></i> Aplicar Parámetros al Capítulo
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Resumen Lateral de Parámetros Activos -->
+          <div class="col-12 col-lg-4">
+            <div class="card p-3 mb-3 bg-light border">
+              <h2 class="h6 fw-bold text-dark mb-3">
+                <i class="bi bi-bookmark-check-fill text-primary me-2"></i>Resumen Vigente
+              </h2>
+              <div class="d-flex flex-column gap-3 small">
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="text-muted">Cuota mínima semanal:</span>
+                  <span class="badge bg-primary fs-6" id="badgeCuotaRef">2 referidos</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="text-muted">Tope inasistencias:</span>
+                  <span class="badge bg-danger fs-6" id="badgeFaltas">2 faltas</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="text-muted">Cronómetro de pitch:</span>
+                  <span class="badge bg-success fs-6" id="badgePitch">120 seg (2 min)</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="text-muted">Ponencia central:</span>
+                  <span class="badge bg-info text-dark fs-6" id="badgePonencia">10 minutos</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="text-muted">Ponentes por sesión:</span>
+                  <span class="badge bg-secondary fs-6" id="badgePonentesCount">2 socios</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-muted">Meta reclutamiento:</span>
+                  <span class="badge bg-dark fs-6" id="badgeMetaAnual">1 socio / año</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lineamientos de Gobernanza -->
+            <div class="card p-3">
+              <h3 class="h6 fw-bold mb-2">Lineamientos Institucionales</h3>
+              <p class="small text-muted mb-2">
+                Estos parámetros aseguran la disciplina y productividad del capítulo:
+              </p>
+              <ul class="small text-muted ps-3 mb-0">
+                <li>Garantía de intercambio equitativo de oportunidades comerciales.</li>
+                <li>Puntualidad y respeto al tiempo de presentación de cada socio.</li>
+                <li>Control estricto de asistencia y fomento de la suplencia activa.</li>
+                <li>Protección y exclusividad de giro para cada miembro registrado.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="app-footer px-3 px-lg-4 py-3 mt-auto">
+        <small class="text-muted">NETX · Capítulo Morelia · Gobernanza y Estatutos Institucionales · <span id="anio"></span></small>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/components/header.js"></script>
+  <script src="assets/js/components/sidebar.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarFormularioReglas();
+
+      document.getElementById('formReglas').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nuevasReglas = {
+          cuotaReferidosSemanal: Number(document.getElementById('cuotaReferidos').value),
+          inasistenciasPermitidas: Number(document.getElementById('inasistenciasPermitidas').value),
+          duracionPitchSegundos: Number(document.getElementById('duracionPitch').value),
+          duracionPresentacionMinutos: Number(document.getElementById('duracionPresentacion').value),
+          presentacionesPorReunion: Number(document.getElementById('presentacionesPorReunion').value),
+          metaIngresoAnual: Number(document.getElementById('metaIngresoAnual').value),
+          nombreCapitulo: document.getElementById('nombreCapitulo').value.trim(),
+          horarioHabitual: document.getElementById('horarioHabitual').value.trim(),
+          sedeHabitual: document.getElementById('sedeHabitual').value.trim()
+        };
+
+        window.NetxStore.saveRules(nuevasReglas);
+        actualizarBadgesResumen(nuevasReglas);
+        window.NetxAlert('Parámetros del capítulo guardados correctamente.');
+      });
+
+      document.getElementById('btnRestablecerReglas').addEventListener('click', () => {
+        if (confirm('¿Deseas restablecer todos los parámetros numéricos a los valores predeterminados del capítulo?')) {
+          const reset = window.NetxStore.resetRules();
+          cargarFormularioReglas();
+          actualizarBadgesResumen(reset);
+          window.NetxAlert('Valores predeterminados restablecidos.', 'info');
+        }
+      });
+    });
+
+    function cargarFormularioReglas() {
+      if (!window.NetxStore) return;
+      const r = window.NetxStore.getRules();
+
+      document.getElementById('cuotaReferidos').value = r.cuotaReferidosSemanal;
+      document.getElementById('inasistenciasPermitidas').value = r.inasistenciasPermitidas;
+      document.getElementById('duracionPitch').value = r.duracionPitchSegundos;
+      document.getElementById('duracionPresentacion').value = r.duracionPresentacionMinutos;
+      document.getElementById('presentacionesPorReunion').value = r.presentacionesPorReunion;
+      document.getElementById('metaIngresoAnual').value = r.metaIngresoAnual;
+      document.getElementById('nombreCapitulo').value = r.nombreCapitulo;
+      document.getElementById('horarioHabitual').value = r.horarioHabitual;
+      document.getElementById('sedeHabitual').value = r.sedeHabitual;
+
+      actualizarBadgesResumen(r);
+    }
+
+    function actualizarBadgesResumen(r) {
+      document.getElementById('badgeCuotaRef').textContent = `${r.cuotaReferidosSemanal} referidos`;
+      document.getElementById('badgeFaltas').textContent = `${r.inasistenciasPermitidas} faltas máx`;
+      document.getElementById('badgePitch').textContent = `${r.duracionPitchSegundos} s (${Math.floor(r.duracionPitchSegundos / 60)} min)`;
+      document.getElementById('badgePonencia').textContent = `${r.duracionPresentacionMinutos} min`;
+      document.getElementById('badgePonentesCount').textContent = `${r.presentacionesPorReunion} socios`;
+      document.getElementById('badgeMetaAnual').textContent = `${r.metaIngresoAnual} socio / año`;
+    }
+  </script>
+</body>
+</html>
+

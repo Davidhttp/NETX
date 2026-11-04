@@ -3,74 +3,332 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Panel · NETX</title>
-  <meta name="description" content="Plataforma web para administrar un capítulo de networking empresarial.">
+  <title>Dashboard · NETX Capítulo Morelia</title>
+  <meta name="description" content="Plataforma de Gobernanza y Networking Empresarial NETX - Capítulo Morelia.">
 
-  <!-- Bootstrap 5.3 (CDN) -->
+  <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-  <!-- Estilos NETX: el orden importa -->
-  <link rel="stylesheet" href="assets/css/variables.css">
   <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="stylesheet" href="assets/css/components/header.css">
-  <link rel="stylesheet" href="assets/css/components/sidebar.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
+
   <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
 
-  <!-- Componentes reutilizables -->
-  <netx-header chapter="Capítulo Morelia" user-name="Usuario" user-role="Sin sesión"></netx-header>
+  <!-- Header Universal -->
+  <netx-header></netx-header>
 
   <div class="app-shell">
+    <!-- Sidebar Consistente -->
     <netx-sidebar active="panel"></netx-sidebar>
 
+    <!-- Área de Trabajo Principal (Main) -->
     <main class="app-main" id="contenido" tabindex="-1">
       <div class="container-fluid p-3 p-lg-4">
 
-        <div class="page-head">
-          <h1 class="h3 mb-1">Panel</h1>
-          <p class="text-muted mb-0">Resumen de la operación del capítulo.</p>
-        </div>
-
-        <div class="alert alert-info d-flex align-items-start gap-2" role="status">
-          <i class="bi bi-info-circle mt-1"></i>
-          <div>Estructura base lista. Los indicadores del panel se conectarán en el Sprint 4 (HU-28).</div>
-        </div>
-
-        <div class="row g-3">
-          <div class="col-12 col-md-6 col-xl-4">
-            <a class="card card-link h-100" href="miembros.html">
-              <div class="card-body">
-                <i class="bi bi-people card-icon"></i>
-                <h2 class="h5 mt-2">Miembros</h2>
-                <p class="mb-0 text-muted">Registrar, editar y dar de baja. Cada giro comercial solo puede tener un miembro activo.</p>
+        <!-- Banner Hero de Bienvenida Compacto -->
+        <div class="card p-4 mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(31, 78, 121, 0.08) 0%, rgba(255, 255, 255, 0.95) 100%);">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-primary rounded-pill px-3 py-1" id="heroRoleBadge">
+                  <i class="bi bi-shield-check me-1"></i> Administrador
+                </span>
+                <span class="text-muted small">•</span>
+                <span class="text-muted small fw-medium" id="heroCurrentDate">Martes, Noviembre 2026</span>
               </div>
-            </a>
-          </div>
-          <div class="col-12 col-md-6 col-xl-4">
-            <a class="card card-link h-100" href="reglas.htm">
-              <div class="card-body">
-                <i class="bi bi-sliders card-icon"></i>
-                <h2 class="h5 mt-2">Reglas del capítulo</h2>
-                <p class="mb-0 text-muted">Referidos mínimos, inasistencias permitidas y duración del pitch.</p>
-              </div>
-            </a>
+              <h1 class="h3 fw-bold text-dark mb-1" id="heroGreetingTitle">Bienvenido, Diego Uriel Méndez Rodríguez</h1>
+              <p class="text-muted small mb-0">Resumen ejecutivo y dinamismo comercial del Capítulo Morelia.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <a href="referidos.html" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>Emitir Referido</span>
+              </a>
+              <a href="reuniones.html" class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-calendar-event"></i>
+                <span>Próxima Sesión</span>
+              </a>
+            </div>
           </div>
         </div>
+
+        <!-- Métricas Ejecutivas Resumidas (KPIs) -->
+        <section class="row g-3 mb-4">
+          <div class="col-6 col-xl-3">
+            <div class="card p-3 h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold d-block">Miembros Activos</span>
+                  <div class="fs-2 fw-bold text-dark mt-1" id="statMiembrosCount">14</div>
+                </div>
+                <div class="stat-icon" style="background: rgba(31, 78, 121, 0.12); color: var(--netx-primary);">
+                  <i class="bi bi-people-fill"></i>
+                </div>
+              </div>
+              <div class="small text-muted mt-2">
+                <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> 100%</span> giros exclusivos
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-xl-3">
+            <div class="card p-3 h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold d-block">Sesiones Realizadas</span>
+                  <div class="fs-2 fw-bold text-dark mt-1" id="statSesionesCount">38</div>
+                </div>
+                <div class="stat-icon" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+                  <i class="bi bi-calendar2-check-fill"></i>
+                </div>
+              </div>
+              <div class="small text-muted mt-2">
+                <span class="text-primary fw-bold">92%</span> asistencia promedio
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-xl-3">
+            <div class="card p-3 h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold d-block">Referidos Emitidos</span>
+                  <div class="fs-2 fw-bold text-dark mt-1" id="statReferidosCount">1,250</div>
+                </div>
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">
+                  <i class="bi bi-arrow-left-right"></i>
+                </div>
+              </div>
+              <div class="small text-muted mt-2">
+                <span class="text-warning fw-bold">+18</span> esta semana
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-xl-3">
+            <div class="card p-3 h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold d-block">Negocio Ganado</span>
+                  <div class="fs-2 fw-bold text-success mt-1" id="statGncTotal">$85,000</div>
+                </div>
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                  <i class="bi bi-currency-dollar"></i>
+                </div>
+              </div>
+              <div class="small text-muted mt-2">
+                <span class="text-success fw-bold">MXN</span> acumulado del capítulo
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gráficas Ejecutivas -->
+        <section class="row g-4 mb-4">
+          <div class="col-12 col-lg-7">
+            <div class="card p-4 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h3 class="h5 fw-bold mb-1 text-dark">Distribución de Referidos por Categoría</h3>
+                  <span class="text-muted small">Top de giros comerciales con mayor dinamismo</span>
+                </div>
+                <span class="badge bg-light text-muted border">Capítulo Morelia</span>
+              </div>
+              <div style="height: 260px; position: relative;">
+                <canvas id="graficaCategoriasDashboard"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-5">
+            <div class="card p-4 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h3 class="h5 fw-bold mb-1 text-dark">Asistencia de la Sesión</h3>
+                  <span class="text-muted small">Última reunión matutina</span>
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle">Vigente</span>
+              </div>
+              <div style="height: 260px; position: relative;">
+                <canvas id="graficaAsistenciaDashboard"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tabla Resumen de Oportunidades Comerciales -->
+        <section class="card p-4 mb-4">
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+            <div>
+              <h3 class="h5 fw-bold mb-1 text-dark">Oportunidades de Negocio en Curso</h3>
+              <span class="text-muted small">Intercambio comercial activo entre socios del Capítulo Morelia</span>
+            </div>
+            <a href="referidos.html" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2">
+              <i class="bi bi-kanban"></i> Ver Embudo Completo
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr class="small text-muted text-uppercase">
+                  <th scope="col">Folio</th>
+                  <th scope="col">Miembro Emisor</th>
+                  <th scope="col">Miembro Receptor</th>
+                  <th scope="col">Prospecto / Empresa</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col" class="text-end">Monto Estimado</th>
+                </tr>
+              </thead>
+              <tbody id="tablaReferidosDashboard">
+                <tr>
+                  <td class="fw-bold text-muted small">#REF-101</td>
+                  <td><strong class="text-dark">Juan Pérez</strong> <br><small class="text-muted">Nexus Creativo</small></td>
+                  <td>María González <br><small class="text-muted">CodePoint Solutions</small></td>
+                  <td><strong>Desarrollo App Móvil</strong> <br><small class="text-muted">Grupo Constructor Bajío</small></td>
+                  <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Ganado</span></td>
+                  <td class="text-end fw-bold text-success">$45,000 MXN</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-muted small">#REF-102</td>
+                  <td><strong class="text-dark">Carlos Vega</strong> <br><small class="text-muted">Vega Contadores</small></td>
+                  <td>Diego Uriel Méndez <br><small class="text-muted">Valora Capital</small></td>
+                  <td><strong>Auditoría Fiscal Anual</strong> <br><small class="text-muted">Hotel Alameda Morelia</small></td>
+                  <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Reunión 1-a-1</span></td>
+                  <td class="text-end fw-bold text-dark">$25,000 MXN</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-muted small">#REF-103</td>
+                  <td><strong class="text-dark">Brayan Reyes</strong> <br><small class="text-muted">Estudio Prisma</small></td>
+                  <td>Juan Pérez <br><small class="text-muted">Nexus Creativo</small></td>
+                  <td><strong>Rediseño de Marca</strong> <br><small class="text-muted">Restaurante Lu Cocina</small></td>
+                  <td><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">Cotización</span></td>
+                  <td class="text-end fw-bold text-dark">$15,000 MXN</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Pie de Página -->
+        <footer class="text-center text-muted small py-4 border-top">
+          <p class="mb-1"><strong>NETX</strong> · Sistema de Gestión de Capítulos de Networking Empresarial · <strong>Capítulo Morelia</strong></p>
+          <p class="mb-0 text-muted">Diseño inspirado en Apple Human Interface Guidelines</p>
+        </footer>
 
       </div>
-
-      <footer class="app-footer px-3 px-lg-4 py-3">
-        <small class="text-muted">NETX · Instituto Tecnológico de Morelia · <span id="anio"></span></small>
-      </footer>
     </main>
   </div>
 
-  <!-- Orden: Bootstrap → componentes → lógica común -->
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/store.js"></script>
   <script src="assets/js/components/header.js"></script>
   <script src="assets/js/components/sidebar.js"></script>
   <script src="assets/js/main.js"></script>
+
+  <!-- Lógica Específica del Dashboard -->
+  <script>
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      establecerFechaActual();
+      cargarDatosUsuario();
+      inicializarGraficas();
+    });
+
+    function establecerFechaActual() {
+      const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const fechaTexto = new Date().toLocaleDateString('es-MX', opciones);
+      const capFecha = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+      const el = document.getElementById('heroCurrentDate');
+      if (el) el.textContent = capFecha;
+    }
+
+    function cargarDatosUsuario() {
+      if (window.NetxStore && typeof window.NetxStore.getCurrentUser === 'function') {
+        const user = window.NetxStore.getCurrentUser();
+        if (user) {
+          const heroGreeting = document.getElementById('heroGreetingTitle');
+          if (heroGreeting) heroGreeting.textContent = `Bienvenido, ${user.nombre || 'Diego Uriel Méndez Rodríguez'}`;
+
+          const heroBadge = document.getElementById('heroRoleBadge');
+          if (heroBadge) {
+            heroBadge.className = `badge ${user.rol === 'Administrador' ? 'bg-primary' : user.rol === 'Coordinador' ? 'bg-warning text-dark' : 'bg-secondary'} rounded-pill px-3 py-1`;
+            heroBadge.innerHTML = `<i class="bi ${user.rol === 'Administrador' ? 'bi-shield-check' : user.rol === 'Coordinador' ? 'bi-clock-history' : 'bi-person'} me-1"></i> ${user.rol || 'Administrador'}`;
+          }
+        }
+      }
+    }
+
+    function inicializarGraficas() {
+      const ctxCat = document.getElementById('graficaCategoriasDashboard');
+      if (ctxCat && typeof Chart !== 'undefined') {
+        new Chart(ctxCat, {
+          type: 'bar',
+          data: {
+            labels: ['Marketing', 'IT / Software', 'Legal', 'Contabilidad', 'Inmobiliaria'],
+            datasets: [{
+              label: 'Referidos Emitidos',
+              data: [28, 22, 16, 12, 9],
+              backgroundColor: '#1F4E79',
+              borderRadius: 8,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0, 0, 0, 0.04)' }
+              },
+              x: {
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      const ctxAsist = document.getElementById('graficaAsistenciaDashboard');
+      if (ctxAsist && typeof Chart !== 'undefined') {
+        new Chart(ctxAsist, {
+          type: 'doughnut',
+          data: {
+            labels: ['Asistencias', 'Suplencias', 'Inasistencias'],
+            datasets: [{
+              data: [13, 1, 0],
+              backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+              borderWidth: 0,
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  boxWidth: 12,
+                  font: { size: 12 }
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+  </script>
 </body>
 </html>

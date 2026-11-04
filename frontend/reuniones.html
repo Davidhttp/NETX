@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reuniones y Operación · NETX</title>
+  <meta name="description"
+    content="Operación semanal de reuniones, pase de lista móvil, confirmación administrativa y cronómetro de pitch.">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+  <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Header -->
+  <netx-header></netx-header>
+
+  <div class="app-shell">
+    <!-- Sidebar con active="reuniones" -->
+    <netx-sidebar active="reuniones"></netx-sidebar>
+
+    <main class="app-main" id="contenido" tabindex="-1">
+      <div class="container-fluid p-3 p-lg-4">
+
+        <!-- Encabezado de página -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center page-head gap-2">
+          <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">Operación de Reuniones Semanales</h1>
+            <p class="text-muted small mb-0">Agenda, pase de lista móvil con doble confirmación y cronómetro de pitch.
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal"
+              data-bs-target="#modalNuevaReunion">
+              <i class="bi bi-calendar-plus"></i>
+              <span>Programar Reunión</span>
+            </button>
+            <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal"
+              data-bs-target="#modalAgregarInvitado">
+              <i class="bi bi-person-plus"></i>
+              <span>+ Registrar Invitado</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta de la Reunión Actual -->
+        <div class="card p-3 p-md-4 mb-4 border-primary-subtle bg-light">
+          <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-success">Reunión #38 en Curso</span>
+                <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>Martes 27 de Octubre, 2026</span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i>08:00 AM - 09:30 AM</span>
+              </div>
+              <h2 class="h5 fw-bold text-dark mb-1" id="reunionSede">Hotel Fiesta Inn Morelia - Salón Independencia</h2>
+              <div class="small text-muted">
+                Capacitación semanal: <strong class="text-dark">Estrategias de Venta Consultiva B2B</strong> (Dr.
+                Claudio Ernesto Florián)
+              </div>
+            </div>
+            <div class="col-12 col-md-4 mt-3 mt-md-0 text-md-end">
+              <div class="d-flex flex-wrap justify-content-md-end gap-2">
+                <span class="badge bg-white text-dark border p-2">
+                  <i class="bi bi-people text-primary me-1"></i> 8 Miembros Registrados
+                </span>
+                <span class="badge bg-white text-dark border p-2">
+                  <i class="bi bi-person-badge text-warning me-1"></i> 2 Invitados
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pestañas de Navegación de la Reunión -->
+        <ul class="nav nav-pills mb-4 gap-2" id="reunionesTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-semibold" id="tab-asistencia-admin" data-bs-toggle="pill"
+              data-bs-target="#panel-asistencia-admin" type="button" role="tab">
+              <i class="bi bi-check2-all me-1"></i> Validación de Asistencia
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="tab-asistencia-movil" data-bs-toggle="pill"
+              data-bs-target="#panel-asistencia-movil" type="button" role="tab">
+              <i class="bi bi-phone me-1"></i> Pase de Lista Móvil
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="tab-cronometro" data-bs-toggle="pill"
+              data-bs-target="#panel-cronometro" type="button" role="tab">
+              <i class="bi bi-stopwatch me-1"></i> Cronómetro de Pitch
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="tab-ponencias" data-bs-toggle="pill"
+              data-bs-target="#panel-ponencias" type="button" role="tab">
+              <i class="bi bi-easel me-1"></i> Presentaciones Estelares
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="tab-agenda" data-bs-toggle="pill" data-bs-target="#panel-agenda"
+              type="button" role="tab">
+              <i class="bi bi-list-ol me-1"></i> Orden del Día e Invitados
+            </button>
+          </li>
+        </ul>
+
+        <!-- Contenido de las Pestañas -->
+        <div class="tab-content" id="reunionesTabContent">
+
+          <!-- ========================================================= -->
+          <!-- PESTAÑA 1: VALIDACIÓN DE ASISTENCIA                       -->
+          <!-- ========================================================= -->
+          <div class="tab-pane fade show active" id="panel-asistencia-admin" role="tabpanel">
+            <div class="card p-3 mb-4">
+              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+                <div>
+                  <h2 class="h6 fw-bold mb-0 text-dark">Validación de Asistencia en Tiempo Real</h2>
+                  <small class="text-muted">El administrador valida o rechaza las marcas enviadas por los miembros desde
+                    sus celulares.</small>
+                </div>
+                <div class="badge bg-primary-subtle text-primary border">Doble Confirmación Activa</div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr class="small text-muted text-uppercase">
+                      <th>Miembro</th>
+                      <th>Giro / Empresa</th>
+                      <th>Hora de Envío</th>
+                      <th>Estado Validación</th>
+                      <th>Tipo Asistencia</th>
+                      <th>Faltas Previas</th>
+                      <th class="text-end pe-3">Acción Directiva</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaAsistenciaAdmin">
+                    <!-- Dinámico con JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PESTAÑA 2: PASE MÓVIL MIEMBRO -->
+          <!-- ========================================================= -->
+          <div class="tab-pane fade" id="panel-asistencia-movil" role="tabpanel">
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-8 col-lg-5">
+
+                <!-- Mockup de Pantalla de Celular (ERS pág 15) -->
+                <div class="card shadow border-2 p-4" style="border-radius: 1.5rem;">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="brand text-primary fw-bold"><span class="brand-mark">N</span> Netx</div>
+                    <span class="badge bg-secondary">Vista Móvil</span>
+                  </div>
+
+                  <!-- Mensaje de estado -->
+                  <div id="bannerAsistenciaMovil"
+                    class="alert alert-warning py-2 mb-3 small d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history"></i>
+                    <span id="txtEstadoMovil">Pendiente de confirmar</span>
+                  </div>
+
+                  <h3 class="h5 fw-bold text-dark mb-1">Mi Asistencia</h3>
+                  <p class="text-muted small mb-3">Reunión del 27 de Octubre de 2026</p>
+
+                  <div class="bg-light p-3 rounded mb-3 small text-muted">
+                    <div><i class="bi bi-clock me-1 text-primary"></i> 8:00 AM - 09:30 AM</div>
+                    <div><i class="bi bi-geo-alt me-1 text-danger"></i> Hotel Fiesta Inn Morelia</div>
+                  </div>
+
+                  <div class="d-grid gap-2 mb-4">
+                    <button class="btn btn-primary py-2 fw-semibold" id="btnMarcarAsistenciaMovil">
+                      <i class="bi bi-check-circle me-1"></i> Marcar mi Asistencia
+                    </button>
+                    <button class="btn btn-outline-secondary py-2 small" data-bs-toggle="modal"
+                      data-bs-target="#modalRegistrarSuplente">
+                      <i class="bi bi-person-fill-gear me-1"></i> ¿No puedes asistir? Registrar Suplente
+                    </button>
+                  </div>
+
+                  <!-- Historial Reciente (ERS pág 15) -->
+                  <h4 class="h6 fw-bold text-dark mb-2">Mi Historial Reciente</h4>
+                  <div class="list-group list-group-flush small" id="listaHistorialMovil">
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                      <span>20/10/26</span>
+                      <span class="badge bg-success-subtle text-success">Presente <i class="bi bi-check"></i></span>
+                      <span class="text-muted">08:00 AM</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                      <span>13/10/26</span>
+                      <span class="badge bg-danger-subtle text-danger">Ausente <i class="bi bi-x"></i></span>
+                      <span class="text-muted">10:01 AM</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                      <span>06/10/26</span>
+                      <span class="badge bg-info-subtle text-info">Suplente <i class="bi bi-people"></i></span>
+                      <span class="text-muted">08:05 AM</span>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PESTAÑA 3: CRONÓMETRO DE PITCH -->
+          <!-- ========================================================= -->
+          <div class="tab-pane fade" id="panel-cronometro" role="tabpanel">
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-9 col-lg-7">
+                <div class="timer-container shadow-sm">
+                  <div class="badge bg-light text-primary border mb-2 px-3 py-1">
+                    <i class="bi bi-mic-fill me-1"></i> Control de Pitch Semanal
+                  </div>
+                  <h2 class="h5 fw-bold text-dark mb-3">Cronómetro de 2 Minutos</h2>
+
+                  <!-- Selector del socio en turno -->
+                  <div class="mb-4 text-start">
+                    <label class="form-label small fw-semibold text-muted">Socio en turno de presentación:</label>
+                    <select class="form-select" id="selectSocioPitch">
+                      <!-- Dinámico con miembros presentes -->
+                    </select>
+                  </div>
+
+                  <!-- Pantalla Digital del Cronómetro -->
+                  <div class="my-4">
+                    <div class="timer-display" id="displayCronometro">02:00</div>
+                    <div class="small text-muted" id="estadoCronometroTxt">Listo para iniciar turno</div>
+                  </div>
+
+                  <!-- Botones de Control -->
+                  <div class="d-flex justify-content-center gap-3 mb-4">
+                    <button class="btn btn-success btn-lg px-4" id="btnIniciarPitch">
+                      <i class="bi bi-play-fill me-1"></i> Iniciar
+                    </button>
+                    <button class="btn btn-warning btn-lg px-4 d-none" id="btnPausarPitch">
+                      <i class="bi bi-pause-fill me-1"></i> Pausar
+                    </button>
+                    <button class="btn btn-outline-secondary btn-lg px-3" id="btnReiniciarPitch"
+                      title="Reiniciar a 2 minutos">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                  </div>
+
+                  <div class="border-top pt-3">
+                    <button class="btn btn-primary w-100 py-2 fw-semibold" id="btnCompletarPitch">
+                      <i class="bi bi-check2-circle me-1"></i> Registrar Pitch Completado y Siguiente Socio
+                    </button>
+                  </div>
+
+                  <!-- Alerta visual de umbrales -->
+                  <div class="d-flex justify-content-center gap-4 mt-3 small text-muted">
+                    <span><i class="bi bi-circle-fill text-success me-1"></i> > 30 s: Tiempo normal</span>
+                    <span><i class="bi bi-circle-fill text-warning me-1"></i> &lt; 30 s: Alerta ámbar</span>
+                    <span><i class="bi bi-circle-fill text-danger me-1"></i> 00:00: Fin de turno</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PESTAÑA 4: PRESENTACIONES CENTRALES DE 10 MIN -->
+          <!-- ========================================================= -->
+          <div class="tab-pane fade" id="panel-ponencias" role="tabpanel">
+            <div class="row g-3">
+              <div class="col-12 col-lg-6">
+                <div class="card p-3 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-primary">Ponente Central 1 (10 Minutos)</span>
+                    <button class="btn btn-sm btn-outline-secondary"
+                      onclick="alert('Reprogramación de ponente guardada.');">
+                      <i class="bi bi-arrow-repeat me-1"></i> Reprogramar
+                    </button>
+                  </div>
+                  <h3 class="h5 fw-bold text-dark mt-2 mb-1">Juan Pérez</h3>
+                  <div class="text-muted small mb-2">Giro: Marketing y Publicidad · Nexus Creativo</div>
+                  <div class="p-3 bg-light rounded small">
+                    <strong>Tema de Ponencia:</strong> "Estrategias de Growth Marketing B2B y Generación de Leads en
+                    Redes Sociales".
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <div class="card p-3 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-primary">Ponente Central 2 (10 Minutos)</span>
+                    <button class="btn btn-sm btn-outline-secondary"
+                      onclick="alert('Reprogramación de ponente guardada.');">
+                      <i class="bi bi-arrow-repeat me-1"></i> Reprogramar
+                    </button>
+                  </div>
+                  <h3 class="h5 fw-bold text-dark mt-2 mb-1">María González</h3>
+                  <div class="text-muted small mb-2">Giro: IT / Desarrollo de Software · CodePoint Solutions</div>
+                  <div class="p-3 bg-light rounded small">
+                    <strong>Tema de Ponencia:</strong> "Automatización de Procesos Empresariales y Soluciones Cloud para
+                    PyMEs".
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card p-3">
+                  <h3 class="h6 fw-bold mb-3 text-dark">Historial de Ponencias Ejecutadas</h3>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr class="small text-muted">
+                          <th>Sesión</th>
+                          <th>Fecha</th>
+                          <th>Ponente</th>
+                          <th>Giro</th>
+                          <th>Tema</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>#37</td>
+                          <td>2026-10-20</td>
+                          <td>Luis Morales</td>
+                          <td>Inmobiliaria</td>
+                          <td>Oportunidades de inversión en naves industriales</td>
+                        </tr>
+                        <tr>
+                          <td>#37</td>
+                          <td>2026-10-20</td>
+                          <td>Sofía Castro</td>
+                          <td>Recursos Humanos</td>
+                          <td>Retención de talento clave en empresas medianas</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PESTAÑA 5: ORDEN DEL DÍA E INVITADOS -->
+          <!-- ========================================================= -->
+          <div class="tab-pane fade" id="panel-agenda" role="tabpanel">
+            <div class="row g-3">
+              <div class="col-12 col-lg-7">
+                <div class="card p-3 h-100">
+                  <h3 class="h6 fw-bold text-dark mb-3">Orden del Día Estructurado</h3>
+                  <ol class="list-group list-group-numbered list-group-flush small" id="listaOrdenDelDia">
+                    <!-- Dinámico -->
+                  </ol>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-5">
+                <div class="card p-3 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h6 fw-bold text-dark mb-0">Invitados Registrados</h3>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                      data-bs-target="#modalAgregarInvitado">
+                      <i class="bi bi-plus"></i> Invitar
+                    </button>
+                  </div>
+                  <div class="list-group list-group-flush small" id="listaInvitados">
+                    <!-- Dinámico -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <footer class="app-footer px-3 px-lg-4 py-3 mt-auto">
+        <small class="text-muted">NETX · Capítulo Morelia · Reuniones y Operación Semanal · <span
+            id="anio"></span></small>
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL: REGISTRAR SUPLENTE -->
+  <div class="modal fade" id="modalRegistrarSuplente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-info-subtle">
+          <h2 class="h5 modal-title fw-bold text-dark">Registrar Suplente Auditable</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formSuplente">
+          <div class="modal-body p-4">
+            <p class="small text-muted">
+              Si no puedes acudir en persona, un suplente representará tu giro y dará tu pitch de 2 min, evitando
+              registrar una inasistencia.
+            </p>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Nombre Completo del Suplente *</label>
+              <input type="text" class="form-control" id="inputNombreSuplente" placeholder="Ej. Lic. Fernando Ortiz"
+                required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Cargo / Relación con tu Empresa *</label>
+              <input type="text" class="form-control" id="inputCargoSuplente"
+                placeholder="Ej. Gerente Comercial / Socio" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Teléfono del Suplente *</label>
+              <input type="tel" class="form-control" id="inputTelSuplente" placeholder="443-123-4567" required>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold">Confirmar Suplente</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR INVITADO -->
+  <div class="modal fade" id="modalAgregarInvitado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h2 class="h5 modal-title fw-bold text-dark">Registrar Invitado a la Sesión</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formInvitado">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Nombre del Visitante *</label>
+              <input type="text" class="form-control" id="invitadoNombre" placeholder="Ej. Dra. Carmen Garza" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Empresa / Negocio *</label>
+              <input type="text" class="form-control" id="invitadoEmpresa" placeholder="Ej. Clínica Dental Morelia"
+                required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Invitado Por (Socio Titular) *</label>
+              <select class="form-select" id="invitadoPorSelect" required>
+                <!-- Opciones dinámicas -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold">Guardar Invitado</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/components/header.js"></script>
+  <script src="assets/js/components/sidebar.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    let pitchInterval = null;
+    let pitchSegundosRestantes = 120;
+    let pitchEnEjecucion = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarAsistenciaAdmin();
+      cargarAgendaEInvitados();
+      cargarSociosPitch();
+
+      // Botón marcar asistencia móvil
+      document.getElementById('btnMarcarAsistenciaMovil').addEventListener('click', () => {
+        const currentUser = window.NetxStore.getCurrentUser();
+        window.NetxStore.marcarAsistenciaMiembro(38, currentUser.id, 'Presente');
+        document.getElementById('bannerAsistenciaMovil').className = 'alert alert-success py-2 mb-3 small d-flex align-items-center gap-2';
+        document.getElementById('txtEstadoMovil').textContent = 'Asistencia enviada. El administrador confirmará pronto.';
+        cargarAsistenciaAdmin();
+        window.NetxAlert('Asistencia móvil enviada exitosamente.');
+      });
+
+      // Submit Suplente
+      document.getElementById('formSuplente').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const currentUser = window.NetxStore.getCurrentUser();
+        const nom = document.getElementById('inputNombreSuplente').value.trim();
+        const cargo = document.getElementById('inputCargoSuplente').value.trim();
+        const descSuplente = `${nom} (${cargo})`;
+
+        window.NetxStore.marcarAsistenciaMiembro(38, currentUser.id, 'Suplente', descSuplente);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalRegistrarSuplente'));
+        if (modal) modal.hide();
+        document.getElementById('bannerAsistenciaMovil').className = 'alert alert-info py-2 mb-3 small d-flex align-items-center gap-2';
+        document.getElementById('txtEstadoMovil').textContent = `Suplente registrado: ${nom}. Pendiente de confirmación.`;
+        cargarAsistenciaAdmin();
+        window.NetxAlert('Suplente registrado correctamente.');
+      });
+
+      // Submit Invitado
+      document.getElementById('formInvitado').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inv = {
+          nombre: document.getElementById('invitadoNombre').value.trim(),
+          empresa: document.getElementById('invitadoEmpresa').value.trim(),
+          invitadoPor: document.getElementById('invitadoPorSelect').value
+        };
+        window.NetxStore.agregarInvitadoReunion(38, inv);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarInvitado'));
+        if (modal) modal.hide();
+        cargarAgendaEInvitados();
+        window.NetxAlert('Invitado registrado en la sesión.');
+      });
+
+      // Cronómetro
+      configurarCronometro();
+    });
+
+    function cargarAsistenciaAdmin() {
+      if (!window.NetxStore) return;
+      const tbody = document.getElementById('tablaAsistenciaAdmin');
+      const asistencias = window.NetxStore.getAttendance(38);
+      const members = window.NetxStore.getMembers();
+
+      tbody.innerHTML = members.map(m => {
+        const asis = asistencias.find(a => a.miembroId === m.id);
+        const tipo = asis ? asis.tipo : 'Sin registro';
+        const estado = asis ? asis.estado : 'Sin registro';
+        const hora = asis ? asis.horaRegistro : '-';
+        const suplente = asis && asis.suplente ? ` <small class="text-info d-block">Suplente: ${asis.suplente}</small>` : '';
+
+        const badgeTipo = tipo === 'Presente' ? 'badge-presente' :
+          tipo === 'Suplente' ? 'badge-suplente' :
+            tipo === 'Inasistencia' ? 'badge-inasistencia' : 'bg-secondary';
+
+        const esInfraccion = m.faltasSinSuplente >= 2;
+
+        return `
+          <tr>
+            <td>
+              <div class="fw-bold text-dark">${m.nombre}</div>
+              <small class="text-muted">${m.empresa}</small>
+            </td>
+            <td><span class="badge bg-light text-dark border">${m.giro}</span></td>
+            <td class="small text-muted">${hora}</td>
+            <td>
+              <span class="badge ${estado === 'Confirmada' ? 'bg-success-subtle text-success border border-success' : 'bg-warning-subtle text-warning border border-warning'} px-2 py-1">
+                ${estado}
+              </span>
+            </td>
+            <td>
+              <span class="badge ${badgeTipo} px-2 py-1">${tipo}</span>
+              ${suplente}
+            </td>
+            <td>
+              <span class="badge ${esInfraccion ? 'bg-danger' : 'bg-light text-muted border'}">
+                ${m.faltasSinSuplente} ${esInfraccion ? '· ¡Infracción!' : ''}
+              </span>
+            </td>
+            <td class="text-end pe-3">
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-success" onclick="validarAsistencia(${m.id}, 'Confirmada', 'Presente')" title="Confirmar Presente">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button type="button" class="btn btn-outline-info" onclick="validarAsistencia(${m.id}, 'Confirmada', 'Suplente')" title="Confirmar Suplente">
+                  <i class="bi bi-person-fill-check"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger" onclick="validarAsistencia(${m.id}, 'Confirmada', 'Inasistencia')" title="Marcar Inasistencia">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function validarAsistencia(miembroId, nuevoEstado, nuevoTipo) {
+      window.NetxStore.confirmarAsistenciaAdmin(38, miembroId, nuevoEstado, nuevoTipo);
+      cargarAsistenciaAdmin();
+      window.NetxAlert(`Asistencia actualizada a [${nuevoTipo} - ${nuevoEstado}].`);
+    }
+
+    function cargarAgendaEInvitados() {
+      if (!window.NetxStore) return;
+      const reunion = window.NetxStore.getMeetingById(38);
+      if (!reunion) return;
+
+      const ol = document.getElementById('listaOrdenDelDia');
+      ol.innerHTML = (reunion.ordenDelDia || []).map(item => `
+        <li class="list-group-item d-flex justify-content-between align-items-start px-0">
+          <div class="ms-2 me-auto">
+            <div class="fw-semibold text-dark">${item}</div>
+          </div>
+        </li>
+      `).join('');
+
+      const invitadosDiv = document.getElementById('listaInvitados');
+      const invitados = reunion.invitados || [];
+      if (invitados.length === 0) {
+        invitadosDiv.innerHTML = '<div class="text-muted p-2">No hay visitantes externos registrados aún.</div>';
+      } else {
+        invitadosDiv.innerHTML = invitados.map(inv => `
+          <div class="list-group-item px-0">
+            <div class="fw-bold text-dark">${inv.nombre}</div>
+            <div class="text-muted">${inv.empresa}</div>
+            <small class="text-primary"><i class="bi bi-person-check me-1"></i>Invitado por: ${inv.invitadoPor}</small>
+          </div>
+        `).join('');
+      }
+
+      // Llenar select de miembros en form invitado
+      const select = document.getElementById('invitadoPorSelect');
+      const members = window.NetxStore.getMembers();
+      select.innerHTML = members.map(m => `<option value="${m.nombre}">${m.nombre}</option>`).join('');
+    }
+
+    function cargarSociosPitch() {
+      const select = document.getElementById('selectSocioPitch');
+      const members = window.NetxStore.getMembers().filter(m => m.estatus === 'Activo');
+      select.innerHTML = members.map(m => `
+        <option value="${m.id}">${m.nombre} (${m.giro} - ${m.empresa})</option>
+      `).join('');
+    }
+
+    function configurarCronometro() {
+      const display = document.getElementById('displayCronometro');
+      const btnIniciar = document.getElementById('btnIniciarPitch');
+      const btnPausar = document.getElementById('btnPausarPitch');
+      const btnReiniciar = document.getElementById('btnReiniciarPitch');
+      const btnCompletar = document.getElementById('btnCompletarPitch');
+      const txtEstado = document.getElementById('estadoCronometroTxt');
+
+      const rules = window.NetxStore.getRules();
+      const duracionBase = rules.duracionPitchSegundos || 120;
+      pitchSegundosRestantes = duracionBase;
+
+      const actualizarDisplay = () => {
+        const mins = Math.floor(pitchSegundosRestantes / 60);
+        const segs = pitchSegundosRestantes % 60;
+        display.textContent = `${String(mins).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
+
+        display.classList.remove('timer-warning', 'timer-danger');
+        if (pitchSegundosRestantes === 0) {
+          display.classList.add('timer-danger');
+          txtEstado.textContent = '¡TIEMPO AGOTADO! Turno concluido.';
+        } else if (pitchSegundosRestantes <= 30) {
+          display.classList.add('timer-warning');
+          txtEstado.textContent = '¡Alerta! Restan menos de 30 segundos.';
+        } else {
+          txtEstado.textContent = 'Pitch en curso...';
+        }
+      };
+
+      btnIniciar.addEventListener('click', () => {
+        if (pitchEnEjecucion) return;
+        pitchEnEjecucion = true;
+        btnIniciar.classList.add('d-none');
+        btnPausar.classList.remove('d-none');
+
+        pitchInterval = setInterval(() => {
+          if (pitchSegundosRestantes > 0) {
+            pitchSegundosRestantes--;
+            actualizarDisplay();
+          } else {
+            clearInterval(pitchInterval);
+            pitchEnEjecucion = false;
+            btnPausar.classList.add('d-none');
+            btnIniciar.classList.remove('d-none');
+          }
+        }, 1000);
+      });
+
+      btnPausar.addEventListener('click', () => {
+        clearInterval(pitchInterval);
+        pitchEnEjecucion = false;
+        btnPausar.classList.add('d-none');
+        btnIniciar.classList.remove('d-none');
+        txtEstado.textContent = 'Cronómetro pausado.';
+      });
+
+      btnReiniciar.addEventListener('click', () => {
+        clearInterval(pitchInterval);
+        pitchEnEjecucion = false;
+        pitchSegundosRestantes = duracionBase;
+        actualizarDisplay();
+        btnPausar.classList.add('d-none');
+        btnIniciar.classList.remove('d-none');
+        txtEstado.textContent = 'Cronómetro reiniciado a 2 minutos.';
+      });
+
+      btnCompletar.addEventListener('click', () => {
+        const socioId = Number(document.getElementById('selectSocioPitch').value);
+        const tiempoUsado = duracionBase - pitchSegundosRestantes;
+        window.NetxStore.registrarPitch(38, socioId, tiempoUsado);
+
+        // Avanzar al siguiente socio en el selector
+        const select = document.getElementById('selectSocioPitch');
+        if (select.selectedIndex < select.options.length - 1) {
+          select.selectedIndex++;
+        }
+        btnReiniciar.click();
+        window.NetxAlert('Pitch registrado correctamente. Listo para el siguiente socio.');
+      });
+
+      actualizarDisplay();
+    }
+  </script>
+</body>
+
+</html>
