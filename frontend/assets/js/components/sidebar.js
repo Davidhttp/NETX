@@ -18,11 +18,11 @@
   const MENU = [
     { clave: 'panel',     texto: 'Panel',               icono: 'bi-speedometer2',     href: 'index.html' },
     { grupo: 'Capítulo' },
-    { clave: 'miembros',  texto: 'Miembros',            icono: 'bi-people',           href: '#miembros' },
-    { clave: 'reglas',    texto: 'Reglas del capítulo', icono: 'bi-sliders',          href: '#reglas' },
+    { clave: 'miembros',  texto: 'Miembros',            icono: 'bi-people',           href: 'miembros.htm' },
+    { clave: 'reglas',    texto: 'Reglas del capítulo', icono: 'bi-sliders',          href: 'reglas.htm' },
     { grupo: 'Operación semanal' },
-    { clave: 'reuniones', texto: 'Reuniones',           icono: 'bi-calendar-event',   href: '#reuniones' },
-    { clave: 'referidos', texto: 'Referidos',           icono: 'bi-arrow-left-right', href: '#referidos' },
+    { clave: 'reuniones', texto: 'Reuniones',           icono: 'bi-calendar-event',   href: 'reuniones.htm' },
+    { clave: 'referidos', texto: 'Referidos',           icono: 'bi-arrow-left-right', href: 'referidos.htm' },
   ];
 
   const esc = (texto) => {

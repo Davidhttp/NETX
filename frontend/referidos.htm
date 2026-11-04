@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Referidos · NETX</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/components/header.css">
+  <link rel="stylesheet" href="assets/css/components/sidebar.css">
+</head>
+<body>
+  <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
+
+  <netx-header chapter="Capítulo Morelia" user-name="Usuario" user-role="Sin sesión"></netx-header>
+
+  <div class="app-shell">
+    <netx-sidebar active="referidos"></netx-sidebar>
+
+    <main class="app-main" id="contenido" tabindex="-1">
+      <div class="container-fluid p-3 p-lg-4">
+
+        <div class="page-head d-flex align-items-center gap-3">
+          <i class="bi bi-arrow-left-right card-icon fs-1"></i>
+          <div>
+            <h1 class="h3 mb-1">Referidos</h1>
+            <p class="text-muted mb-0">M4 · Referidos y Negocios</p>
+          </div>
+        </div>
+
+        <p>Intercambio de oportunidades de negocio entre miembros.</p>
+
+        <div class="alert alert-warning d-flex align-items-start gap-2" role="status">
+          <i class="bi bi-tools mt-1"></i>
+          <div>Pantalla en construcción. Esta página es provisional para validar la navegación.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Historias de usuario de esta sección</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center"><span><strong>HU-18</strong> · Registro e intercambio de referidos</span><span class="badge text-bg-secondary">Sprint 3</span></li>
+            <li class="list-group-item d-flex justify-content-between align-items-center"><span><strong>HU-19</strong> · Bloqueo de prospectos activos duplicados</span><span class="badge text-bg-secondary">Sprint 3</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <footer class="app-footer px-3 px-lg-4 py-3">
+        <small class="text-muted">NETX · Instituto Tecnológico de Morelia · <span id="anio"></span></small>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/components/header.js"></script>
+  <script src="assets/js/components/sidebar.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
