@@ -85,6 +85,7 @@ $user = [
     'fechaIngreso' => $u['fecha_ingreso'],
     'estatus'      => 'Activo',
     'avatar'       => mb_strtoupper(mb_substr($u['nombre'], 0, 1)),
+    'paginas'      => netx_role_pages($u['rol']),     // páginas que su rol puede abrir
 ];
 $_SESSION['user'] = $user;
 

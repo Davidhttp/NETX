@@ -1,30 +1,30 @@
 /**
  * NETX · sidebar.js
  * Componente web <netx-sidebar>
- * Menú lateral consistente para todas las vistas con soporte colapsable para escritorio,
- * drawer responsivo para tablets/móviles y barra de navegación inferior (Bottom Navigation).
+ * Menú lateral y barra inferior móvil, filtrados según las páginas que el rol
+ * del usuario puede abrir (window.NetxAuth, cargado por auth.js).
  */
 (() => {
   'use strict';
 
   const MENU = [
-    { clave: 'panel',     texto: 'Dashboard',           icono: 'bi-grid-fill',        href: 'index.html' },
+    { clave: 'panel',     texto: 'Dashboard',            icono: 'bi-grid-fill',           href: 'index.html' },
     { grupo: 'Gobernanza' },
-    { clave: 'miembros',  texto: 'Gestión de Miembros', icono: 'bi-people-fill',      href: 'miembros.html' },
-    { clave: 'reglas',    texto: 'Reglas del Capítulo',  icono: 'bi-sliders',          href: 'reglas.html' },
+    { clave: 'miembros',  texto: 'Gestión de Miembros',  icono: 'bi-people-fill',         href: 'miembros.html' },
+    { clave: 'reglas',    texto: 'Reglas del Capítulo',  icono: 'bi-sliders',             href: 'reglas.html' },
     { grupo: 'Operación Semanal' },
-    { clave: 'reuniones', texto: 'Reuniones y Pitches', icono: 'bi-calendar-event-fill', href: 'reuniones.html' },
-    { clave: 'referidos', texto: 'Embudo de Referidos', icono: 'bi-arrow-left-right', href: 'referidos.html' },
+    { clave: 'reuniones', texto: 'Reuniones y Pitches',  icono: 'bi-calendar-event-fill', href: 'reuniones.html' },
+    { clave: 'referidos', texto: 'Embudo de Referidos',  icono: 'bi-arrow-left-right',    href: 'referidos.html' },
     { grupo: 'Cuenta' },
-    { clave: 'perfil',    texto: 'Mi Perfil',           icono: 'bi-person-circle',    href: 'perfil.html' },
+    { clave: 'perfil',    texto: 'Mi Perfil',            icono: 'bi-person-circle',       href: 'perfil.html' },
   ];
 
   const BOTTOM_NAV = [
-    { clave: 'panel',     texto: 'Dashboard', icono: 'bi-grid-fill',        href: 'index.html' },
-    { clave: 'miembros',  texto: 'Miembros',  icono: 'bi-people-fill',      href: 'miembros.html' },
+    { clave: 'panel',     texto: 'Dashboard', icono: 'bi-grid-fill',           href: 'index.html' },
+    { clave: 'miembros',  texto: 'Miembros',  icono: 'bi-people-fill',         href: 'miembros.html' },
     { clave: 'reuniones', texto: 'Reuniones', icono: 'bi-calendar-event-fill', href: 'reuniones.html' },
-    { clave: 'referidos', texto: 'Referidos', icono: 'bi-arrow-left-right', href: 'referidos.html' },
-    { clave: 'perfil',    texto: 'Perfil',    icono: 'bi-person-circle',    href: 'perfil.html' },
+    { clave: 'referidos', texto: 'Referidos', icono: 'bi-arrow-left-right',    href: 'referidos.html' },
+    { clave: 'perfil',    texto: 'Perfil',    icono: 'bi-person-circle',       href: 'perfil.html' },
   ];
 
   const esc = (texto) => {
@@ -35,23 +35,36 @@
 
   class NetxSidebar extends HTMLElement {
     connectedCallback() {
-      const activa = this.getAttribute('active') || 'panel';
+      const activa  = this.getAttribute('active') || 'panel';
+      const paginas = window.NetxAuth && window.NetxAuth.user && window.NetxAuth.user.paginas;
+      const visible = (clave) => !paginas || paginas.includes(clave);
 
-      const items = MENU.map((item) => {
-        if (item.grupo) {
-          return `<li class="nav-group nav-text">${esc(item.grupo)}</li>`;
+      // Agrupa por sección y descarta secciones sin ítems visibles para el rol
+      const secciones = [];
+      MENU.forEach((item) => {
+        if (item.grupo) secciones.push({ grupo: item.grupo, items: [] });
+        else {
+          if (!secciones.length) secciones.push({ grupo: null, items: [] });
+          if (visible(item.clave)) secciones[secciones.length - 1].items.push(item);
         }
-        const esActivo = item.clave === activa;
-        return `
+      });
+
+      const items = secciones.filter(s => s.items.length).map((s) => {
+        const cab = s.grupo ? `<li class="nav-group nav-text">${esc(s.grupo)}</li>` : '';
+        const lis = s.items.map((item) => {
+          const esActivo = item.clave === activa;
+          return `
           <li class="nav-item">
             <a class="nav-link${esActivo ? ' active' : ''}" href="${esc(item.href)}"${esActivo ? ' aria-current="page"' : ''} title="${esc(item.texto)}">
               <i class="bi ${esc(item.icono)}"></i>
               <span class="nav-text">${esc(item.texto)}</span>
             </a>
           </li>`;
+        }).join('');
+        return cab + lis;
       }).join('');
 
-      const bottomItems = BOTTOM_NAV.map((item) => {
+      const bottomItems = BOTTOM_NAV.filter(i => visible(i.clave)).map((item) => {
         const esActivo = item.clave === activa;
         return `
           <a href="${esc(item.href)}" class="bottom-nav-item${esActivo ? ' active' : ''}" title="${esc(item.texto)}">
