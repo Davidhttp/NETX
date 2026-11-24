@@ -304,6 +304,7 @@
       const modalAgregarEl = document.getElementById('modalAgregarMiembro');
       modalAgregarEl.addEventListener('show.bs.modal', (e) => {
         if (!miembroSeleccionadoId) {
+          cargarOriginadoresSelect();
           document.getElementById('modalMiembroTitulo').textContent = 'Registrar Nuevo Miembro';
           document.getElementById('miembroId').value = '';
           document.getElementById('formMiembro').reset();
@@ -335,18 +336,20 @@
       });
     }
 
-    function cargarOriginadoresSelect() {
+    function cargarOriginadoresSelect(excludeMemberId = null) {
       if (!window.NetxStore) return;
       const members = window.NetxStore.getMembers();
       const select = document.getElementById('inputOriginador');
-      select.innerHTML = '<option value="">Selecciona quién invitó al miembro...</option><option value="Fundador">Socio Fundador / Directiva</option>';
+      select.innerHTML = '<option value="">Selecciona quién invitó al miembro...</option><option value="0">Socio Fundador / Directiva</option>';
 
-      members.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.nombre;
-        opt.textContent = `${m.nombre} (${m.empresa})`;
-        select.appendChild(opt);
-      });
+      members
+        .filter(m => !excludeMemberId || Number(m.id) !== Number(excludeMemberId))
+        .forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = String(m.id);
+          opt.textContent = `${m.nombre} (${m.empresa})`;
+          select.appendChild(opt);
+        });
     }
 
     function renderizarTablaMiembros() {
@@ -380,10 +383,18 @@
         return;
       }
 
+      const rules = window.NetxStore.getRules ? window.NetxStore.getRules() : {};
+      const metaAnual = Number(rules.metaIngresoAnual || 1);
+
       tbody.innerHTML = miembros.map(m => {
         let badgeClase = 'badge-activo';
         if (m.estatus === 'Suspendido') badgeClase = 'badge-suspendido';
         if (m.estatus === 'Baja') badgeClase = 'badge-baja';
+
+        const reclutados = window.NetxStore.getConteoReclutamientos
+          ? window.NetxStore.getConteoReclutamientos(m.id)
+          : 0;
+        const cumpleMeta = reclutados >= metaAnual;
 
         return `
           <tr>
@@ -405,7 +416,10 @@
             </td>
             <td class="small text-muted">${m.fechaIngreso}</td>
             <td>
-              <small class="text-muted"><i class="bi bi-person-check text-success me-1"></i>${m.originador || 'Fundador'}</small>
+              <small class="text-muted d-block"><i class="bi bi-person-check text-success me-1"></i>${m.originador || 'Fundador'}</small>
+              <span class="badge ${cumpleMeta ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-light text-muted border'} mt-1" style="font-size: 0.7rem;">
+                Meta anual: ${reclutados}/${metaAnual}
+              </span>
             </td>
             <td>
               <span class="badge ${badgeClase} px-2 py-1">[${m.estatus}]</span>
@@ -434,6 +448,10 @@
       const alerta = document.getElementById('alertaExclusividad');
       const alertaMsg = document.getElementById('mensajeExclusividad');
 
+      const originadorSelectVal = document.getElementById('inputOriginador').value;
+      const idReferidoPor = (originadorSelectVal && originadorSelectVal !== '0') ? Number(originadorSelectVal) : null;
+      const originadorObj = idReferidoPor ? window.NetxStore.getMemberById(idReferidoPor) : null;
+
       const datos = {
         id: idVal ? Number(idVal) : null,
         nombre: document.getElementById('inputNombre').value.trim(),
@@ -444,7 +462,8 @@
         telefono: document.getElementById('inputTelefono').value.trim(),
         fechaIngreso: document.getElementById('inputFechaIngreso').value,
         estatus: document.getElementById('inputEstatus').value,
-        originador: document.getElementById('inputOriginador').value
+        id_referido_por: idReferidoPor,
+        originador: originadorObj ? originadorObj.nombre : 'Fundador'
       };
 
       try {
@@ -452,6 +471,7 @@
         alerta.classList.add('d-none');
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarMiembro'));
         if (modal) modal.hide();
+        cargarOriginadoresSelect();
         renderizarTablaMiembros();
         window.NetxAlert(idVal ? 'Miembro actualizado exitosamente.' : 'Nuevo miembro registrado con giro exclusivo.');
       } catch (err) {
@@ -465,6 +485,7 @@
       const m = window.NetxStore.getMemberById(id);
       if (!m) return;
 
+      cargarOriginadoresSelect(m.id);
       document.getElementById('modalMiembroTitulo').textContent = 'Editar Datos del Miembro';
       document.getElementById('miembroId').value = m.id;
       document.getElementById('inputNombre').value = m.nombre;
@@ -475,7 +496,15 @@
       document.getElementById('inputTelefono').value = m.telefono;
       document.getElementById('inputFechaIngreso').value = m.fechaIngreso;
       document.getElementById('inputEstatus').value = m.estatus;
-      document.getElementById('inputOriginador').value = m.originador || 'Fundador';
+
+      let origVal = '0';
+      if (m.id_referido_por) {
+        origVal = String(m.id_referido_por);
+      } else if (m.originador && m.originador !== 'Fundador') {
+        const origMatch = window.NetxStore.getMembers().find(x => x.nombre === m.originador);
+        if (origMatch) origVal = String(origMatch.id);
+      }
+      document.getElementById('inputOriginador').value = origVal;
       document.getElementById('alertaExclusividad').classList.add('d-none');
 
       const modal = new bootstrap.Modal(document.getElementById('modalAgregarMiembro'));
@@ -515,6 +544,13 @@
       const m = window.NetxStore.getMemberById(id);
       if (!m) return;
 
+      const rules = window.NetxStore.getRules ? window.NetxStore.getRules() : {};
+      const maxFaltas = Number(rules.inasistenciasPermitidas ?? 2);
+      const metaAnual = Number(rules.metaIngresoAnual || 1);
+      const reclutados = window.NetxStore.getConteoReclutamientos
+        ? window.NetxStore.getConteoReclutamientos(m.id)
+        : 0;
+
       const cont = document.getElementById('contenidoDetalleMiembro');
       cont.innerHTML = `
         <div class="text-center mb-4">
@@ -551,12 +587,16 @@
             <span class="fw-semibold text-primary">${m.originador || 'Fundador'}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Nuevos ingresos originados (Meta ${metaAnual}/año):</span>
+            <span class="badge ${reclutados >= metaAnual ? 'bg-success' : 'bg-secondary'}">${reclutados} / ${metaAnual}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
             <span class="text-muted">Asistencias consecutivas:</span>
             <span class="badge bg-success">${m.asistenciasConsecutivas || 0} sesiones</span>
           </li>
           <li class="list-group-item d-flex justify-content-between px-0">
             <span class="text-muted">Inasistencias sin suplente:</span>
-            <span class="badge ${m.faltasSinSuplente >= 2 ? 'bg-danger' : 'bg-light text-dark'}">${m.faltasSinSuplente || 0}</span>
+            <span class="badge ${(m.faltasSinSuplente || 0) > maxFaltas ? 'bg-danger' : 'bg-light text-dark'}">${m.faltasSinSuplente || 0}</span>
           </li>
         </ul>
       `;
@@ -566,5 +606,3 @@
   </script>
 </body>
 </html>
-
-

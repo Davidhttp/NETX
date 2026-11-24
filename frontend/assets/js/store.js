@@ -52,6 +52,7 @@
       fechaIngreso: '2025-02-15',
       estatus: 'Activo', // Activo | Suspendido | Baja
       rol: 'Administrador',
+      id_referido_por: null,
       originador: 'Fundador',
       asistenciasConsecutivas: 18,
       faltasSinSuplente: 0,
@@ -67,6 +68,7 @@
       fechaIngreso: '2025-03-01',
       estatus: 'Activo',
       rol: 'Coordinador',
+      id_referido_por: 1,
       originador: 'Diego Uriel Méndez Rodríguez',
       asistenciasConsecutivas: 14,
       faltasSinSuplente: 0,
@@ -82,6 +84,7 @@
       fechaIngreso: '2026-01-16',
       estatus: 'Activo',
       rol: 'Miembro',
+      id_referido_por: 1,
       originador: 'Diego Uriel Méndez Rodríguez',
       asistenciasConsecutivas: 10,
       faltasSinSuplente: 0,
@@ -97,6 +100,7 @@
       fechaIngreso: '2026-02-13',
       estatus: 'Activo',
       rol: 'Miembro',
+      id_referido_por: 3,
       originador: 'Juan Pérez',
       asistenciasConsecutivas: 8,
       faltasSinSuplente: 0,
@@ -112,6 +116,7 @@
       fechaIngreso: '2026-01-12',
       estatus: 'Suspendido',
       rol: 'Miembro',
+      id_referido_por: 1,
       originador: 'Diego Uriel Méndez Rodríguez',
       asistenciasConsecutivas: 0,
       faltasSinSuplente: 2,
@@ -127,6 +132,7 @@
       fechaIngreso: '2026-01-12',
       estatus: 'Baja', // Baja definitiva: su giro queda liberado
       rol: 'Miembro',
+      id_referido_por: 4,
       originador: 'María González',
       asistenciasConsecutivas: 0,
       faltasSinSuplente: 3,
@@ -142,6 +148,7 @@
       fechaIngreso: '2026-01-12',
       estatus: 'Activo',
       rol: 'Miembro',
+      id_referido_por: 3,
       originador: 'Juan Pérez',
       asistenciasConsecutivas: 6,
       faltasSinSuplente: 1,
@@ -157,6 +164,7 @@
       fechaIngreso: '2026-01-12',
       estatus: 'Activo',
       rol: 'Miembro',
+      id_referido_por: 2,
       originador: 'Brayan Ramiro Reyes Cárdenas',
       asistenciasConsecutivas: 9,
       faltasSinSuplente: 0,
@@ -172,6 +180,7 @@
       fechaIngreso: '2026-01-12',
       estatus: 'Suspendido',
       rol: 'Miembro',
+      id_referido_por: 1,
       originador: 'Diego Uriel Méndez Rodríguez',
       asistenciasConsecutivas: 0,
       faltasSinSuplente: 2,
@@ -198,8 +207,8 @@
         '09:25 - Cierre, avisos del coordinador y networking abierto'
       ],
       ponentesPrincipales: [
-        { miembroId: 3, nombre: 'Juan Pérez', tema: 'Cómo posicionar tu marca en LinkedIn B2B' },
-        { miembroId: 4, nombre: 'María González', tema: 'Transformación digital y automatización de procesos' }
+        { miembroId: 3, nombre: 'Juan Pérez', giro: 'Marketing y Publicidad', empresa: 'Nexus Creativo', tema: 'Cómo posicionar tu marca en LinkedIn B2B', ejecutada: false },
+        { miembroId: 4, nombre: 'María González', giro: 'IT / Desarrollo de Software', empresa: 'CodePoint Solutions', tema: 'Transformación digital y automatización de procesos', ejecutada: false }
       ],
       capacitacion: {
         tema: 'Estrategias de Venta Consultiva',
@@ -220,8 +229,8 @@
       estado: 'Finalizada',
       ordenDelDia: ['Apertura', 'Ponencias', 'Pitches', 'Referidos', 'Cierre'],
       ponentesPrincipales: [
-        { miembroId: 7, nombre: 'Luis Morales', tema: 'Oportunidades de inversión en naves industriales' },
-        { miembroId: 8, nombre: 'Sofía Castro', tema: 'Retención de talento clave en empresas medianas' }
+        { miembroId: 7, nombre: 'Luis Morales', giro: 'Inmobiliaria y Bienes Raíces', empresa: 'Bienes Raíces Premier', tema: 'Oportunidades de inversión en naves industriales', ejecutada: true },
+        { miembroId: 8, nombre: 'Sofía Castro', giro: 'Recursos Humanos y Capacitación', empresa: 'Talento y Liderazgo RH', tema: 'Retención de talento clave en empresas medianas', ejecutada: true }
       ],
       capacitacion: {
         tema: 'Gobernanza y ética en redes de negocios',
@@ -501,11 +510,33 @@
         }
       }
 
+      // Resolver socio originador (HU-10: id_referido_por + nombre visible)
+      let idReferidoPor = null;
+      if (memberData.id_referido_por !== undefined && memberData.id_referido_por !== null && memberData.id_referido_por !== '' && Number(memberData.id_referido_por) > 0) {
+        idReferidoPor = Number(memberData.id_referido_por);
+      } else if (memberData.originador && memberData.originador !== 'Fundador') {
+        const foundOrig = members.find(m => m.nombre.trim().toLowerCase() === memberData.originador.trim().toLowerCase());
+        if (foundOrig) idReferidoPor = foundOrig.id;
+      }
+
+      if (memberData.id && idReferidoPor === Number(memberData.id)) {
+        idReferidoPor = null;
+      }
+
+      const originadorObj = idReferidoPor ? members.find(m => m.id === idReferidoPor) : null;
+      const originadorNombre = originadorObj ? originadorObj.nombre : (memberData.originador || 'Fundador');
+
+      const normalizedMemberData = {
+        ...memberData,
+        id_referido_por: idReferidoPor,
+        originador: idReferidoPor ? originadorNombre : 'Fundador'
+      };
+
       if (memberData.id) {
         // Edición (HU-08)
         const index = members.findIndex(m => m.id === Number(memberData.id));
         if (index === -1) throw new Error('Miembro no encontrado');
-        members[index] = { ...members[index], ...memberData, fechaActualizacion: new Date().toISOString().split('T')[0] };
+        members[index] = { ...members[index], ...normalizedMemberData, fechaActualizacion: new Date().toISOString().split('T')[0] };
       } else {
         // Alta nueva (HU-06)
         const nextId = members.length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1;
@@ -516,7 +547,7 @@
           faltasSinSuplente: 0,
           avatar: initial,
           fechaIngreso: memberData.fechaIngreso || new Date().toISOString().split('T')[0],
-          ...memberData
+          ...normalizedMemberData
         };
         members.push(newMember);
       }
@@ -524,6 +555,21 @@
       setItem(STORAGE_KEYS.MEMBERS, members);
       window.dispatchEvent(new CustomEvent('netx:members-updated', { detail: members }));
       return true;
+    },
+
+    getConteoReclutamientos(miembroId) {
+      const targetId = Number(miembroId);
+      const members = this.getMembers();
+      const target = members.find(m => m.id === targetId);
+      if (!target) return 0;
+
+      return members.filter(m => {
+        if (m.id === targetId) return false;
+        if (m.id_referido_por !== undefined && m.id_referido_por !== null) {
+          return Number(m.id_referido_por) === targetId;
+        }
+        return m.originador && m.originador.trim().toLowerCase() === target.nombre.trim().toLowerCase();
+      }).length;
     },
 
     cambiarEstatusMiembro(id, nuevoEstatus, motivo = '') {
@@ -581,25 +627,154 @@
 
     saveMeeting(meetingData) {
       const meetings = this.getMeetings();
+      let savedMeeting = null;
       if (meetingData.id) {
         const index = meetings.findIndex(m => m.id === Number(meetingData.id));
         if (index === -1) throw new Error('Reunión no encontrada');
         meetings[index] = { ...meetings[index], ...meetingData };
+        savedMeeting = meetings[index];
       } else {
         const nextId = meetings.length > 0 ? Math.max(...meetings.map(m => m.id)) + 1 : 1;
-        const newMeeting = {
+        const ponentesAuto = (meetingData.ponentesPrincipales && meetingData.ponentesPrincipales.length > 0)
+          ? meetingData.ponentesPrincipales
+          : this._seleccionarPonentesRotacion(meetings);
+
+        savedMeeting = {
           id: nextId,
           numero: nextId,
           estado: 'Programada',
           invitados: [],
           ordenDelDia: DEFAULT_MEETINGS[0].ordenDelDia,
+          capacitacion: {
+            tema: meetingData.capacitacionTema || 'Por definir',
+            instructor: meetingData.capacitacionInstructor || 'Por definir'
+          },
+          ponentesPrincipales: ponentesAuto,
           ...meetingData
         };
-        meetings.unshift(newMeeting);
+        meetings.unshift(savedMeeting);
       }
       setItem(STORAGE_KEYS.MEETINGS, meetings);
       window.dispatchEvent(new CustomEvent('netx:meetings-updated', { detail: meetings }));
-      return true;
+      return savedMeeting;
+    },
+
+    _seleccionarPonentesRotacion(meetings, excludeMeetingId = null) {
+      const members = this.getMembers().filter(m => m.estatus === 'Activo');
+      const conteo = new Map();
+      const ultimaSesion = new Map();
+
+      meetings.forEach(m => {
+        if (excludeMeetingId && m.id === Number(excludeMeetingId)) return;
+        (m.ponentesPrincipales || []).forEach(p => {
+          const id = Number(p.miembroId);
+          conteo.set(id, (conteo.get(id) || 0) + 1);
+          const prev = ultimaSesion.get(id) || 0;
+          if ((m.numero || m.id) > prev) ultimaSesion.set(id, m.numero || m.id);
+        });
+      });
+
+      const ordenados = [...members].sort((a, b) => {
+        const countDiff = (conteo.get(a.id) || 0) - (conteo.get(b.id) || 0);
+        if (countDiff !== 0) return countDiff;
+        const lastDiff = (ultimaSesion.get(a.id) || 0) - (ultimaSesion.get(b.id) || 0);
+        if (lastDiff !== 0) return lastDiff;
+        return a.id - b.id;
+      });
+
+      return ordenados.slice(0, 2).map(m => ({
+        miembroId: m.id,
+        nombre: m.nombre,
+        giro: m.giro,
+        empresa: m.empresa,
+        tema: `Presentación comercial: ${m.giro}`,
+        ejecutada: false
+      }));
+    },
+
+    actualizarCapacitacion(reunionId, { tema, instructor }) {
+      const meetings = this.getMeetings();
+      const meeting = meetings.find(m => m.id === Number(reunionId));
+      if (!meeting) throw new Error('Reunión no encontrada');
+      meeting.capacitacion = {
+        tema: (tema || '').trim() || 'Por definir',
+        instructor: (instructor || '').trim() || 'Por definir'
+      };
+      setItem(STORAGE_KEYS.MEETINGS, meetings);
+      window.dispatchEvent(new CustomEvent('netx:meetings-updated', { detail: meetings }));
+      return meeting;
+    },
+
+    generarRotacionPonentes(reunionId) {
+      const meetings = this.getMeetings();
+      const meeting = meetings.find(m => m.id === Number(reunionId));
+      if (!meeting) throw new Error('Reunión no encontrada');
+      meeting.ponentesPrincipales = this._seleccionarPonentesRotacion(meetings, meeting.id);
+      setItem(STORAGE_KEYS.MEETINGS, meetings);
+      window.dispatchEvent(new CustomEvent('netx:meetings-updated', { detail: meetings }));
+      return meeting;
+    },
+
+    reprogramarPonente(reunionId, slotIndex, nuevoMiembroId, tema) {
+      const meetings = this.getMeetings();
+      const meeting = meetings.find(m => m.id === Number(reunionId));
+      if (!meeting) throw new Error('Reunión no encontrada');
+      const member = this.getMemberById(Number(nuevoMiembroId));
+      if (!member) throw new Error('Miembro ponente no encontrado');
+
+      if (!Array.isArray(meeting.ponentesPrincipales)) {
+        meeting.ponentesPrincipales = [];
+      }
+      meeting.ponentesPrincipales[slotIndex] = {
+        miembroId: member.id,
+        nombre: member.nombre,
+        giro: member.giro,
+        empresa: member.empresa,
+        tema: (tema || '').trim() || `Presentación comercial: ${member.giro}`,
+        ejecutada: false
+      };
+      setItem(STORAGE_KEYS.MEETINGS, meetings);
+      window.dispatchEvent(new CustomEvent('netx:meetings-updated', { detail: meetings }));
+      return meeting;
+    },
+
+    marcarPonenciaEjecutada(reunionId, slotIndex, ejecutada = true) {
+      const meetings = this.getMeetings();
+      const meeting = meetings.find(m => m.id === Number(reunionId));
+      if (!meeting || !meeting.ponentesPrincipales || !meeting.ponentesPrincipales[slotIndex]) {
+        throw new Error('Ponencia no encontrada');
+      }
+      meeting.ponentesPrincipales[slotIndex].ejecutada = Boolean(ejecutada);
+      setItem(STORAGE_KEYS.MEETINGS, meetings);
+      window.dispatchEvent(new CustomEvent('netx:meetings-updated', { detail: meetings }));
+      return meeting;
+    },
+
+    getHistorialPresentaciones() {
+      const meetings = this.getMeetings();
+      const members = this.getMembers();
+      const historial = [];
+
+      meetings.forEach(m => {
+        (m.ponentesPrincipales || []).forEach((p, idx) => {
+          const yaEjecutada = p.ejecutada === true || (m.estado === 'Finalizada' && p.ejecutada !== false);
+          if (!yaEjecutada) return;
+          const mem = members.find(x => x.id === Number(p.miembroId));
+          historial.push({
+            reunionId: m.id,
+            numero: m.numero || m.id,
+            fecha: m.fecha,
+            slotIndex: idx,
+            miembroId: p.miembroId,
+            nombre: p.nombre || (mem ? mem.nombre : 'Socio'),
+            giro: p.giro || (mem ? mem.giro : '-'),
+            empresa: p.empresa || (mem ? mem.empresa : ''),
+            tema: p.tema || '-'
+          });
+        });
+      });
+
+      return historial.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '') || b.numero - a.numero);
     },
 
     getAttendance(reunionId = 38) {
@@ -661,13 +836,47 @@
 
     registrarPitch(reunionId, miembroId, tiempoSegundos) {
       let attendances = getItem(STORAGE_KEYS.ATTENDANCE, DEFAULT_ATTENDANCE);
-      const item = attendances.find(a => a.reunionId === Number(reunionId) && a.miembroId === Number(miembroId));
+      const rId = Number(reunionId);
+      const mId = Number(miembroId);
+      const segs = Math.max(0, Number(tiempoSegundos) || 0);
+      let item = attendances.find(a => a.reunionId === rId && a.miembroId === mId);
+
       if (item) {
         item.pitchRealizado = true;
-        item.pitchTiempoSeg = tiempoSegundos;
-        setItem(STORAGE_KEYS.ATTENDANCE, attendances);
-        window.dispatchEvent(new CustomEvent('netx:attendance-updated', { detail: attendances }));
+        item.pitchTiempoSeg = segs;
+      } else {
+        item = {
+          reunionId: rId,
+          miembroId: mId,
+          estado: 'Confirmada',
+          tipo: 'Presente',
+          horaRegistro: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          suplente: null,
+          pitchRealizado: true,
+          pitchTiempoSeg: segs
+        };
+        attendances.push(item);
       }
+
+      setItem(STORAGE_KEYS.ATTENDANCE, attendances);
+      window.dispatchEvent(new CustomEvent('netx:attendance-updated', { detail: attendances }));
+      return item;
+    },
+
+    getPitchesByMeeting(reunionId) {
+      const attendances = this.getAttendance(reunionId);
+      const members = this.getMembers();
+      return attendances
+        .filter(a => a.pitchRealizado)
+        .map(a => {
+          const mem = members.find(m => m.id === Number(a.miembroId));
+          return {
+            ...a,
+            nombre: mem ? mem.nombre : `Socio #${a.miembroId}`,
+            giro: mem ? mem.giro : '-',
+            empresa: mem ? mem.empresa : ''
+          };
+        });
     },
 
     agregarInvitadoReunion(reunionId, invitado) {
@@ -795,8 +1004,8 @@
       const meetings = this.getMeetings();
 
       const miembrosActivos = members.filter(m => m.estatus === 'Activo').length;
-      const reunionesTotales = meetings.length + 36; // Historial consolidado
-      const referidosTotales = referrals.length + 1244; // Historial consolidado
+      const reunionesTotales = meetings.length;
+      const referidosTotales = referrals.length;
       const negocioGanadoTotal = referrals
         .filter(r => r.estado === 'Ganado')
         .reduce((sum, r) => sum + (Number(r.montoGanado) || 0), 0);
@@ -806,10 +1015,9 @@
         miembrosTotal: members.length,
         reunionesRealizadas: reunionesTotales,
         referidosGenerados: referidosTotales,
-        negocioGanadoTotal: negocioGanadoTotal || 85000,
+        negocioGanadoTotal,
         ultimosReferidos: referrals.slice(0, 6)
       };
     }
   };
 })();
-

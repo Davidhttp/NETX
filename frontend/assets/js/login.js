@@ -7,7 +7,6 @@
   'use strict';
 
   const API_LOGIN = '../backend/api/login.php';
-  const DEMO_PASSWORD = 'Netx2026*';   // contraseña del seed (quitar en producción)
 
   const form     = document.getElementById('loginForm');
   const alertBox = document.getElementById('loginAlert');
@@ -53,11 +52,4 @@
       submitBt.disabled = false;
     }
   });
-
-  // Botones de "Acceso rápido para pruebas"
-  window.autoLogin = (email) => {
-    document.getElementById('emailInput').value = email;
-    document.getElementById('passwordInput').value = DEMO_PASSWORD;
-    form.requestSubmit();
-  };
 })();

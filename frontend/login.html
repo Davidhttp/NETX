@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -36,7 +36,7 @@
             <div class="input-group">
               <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
               <input type="email" class="form-control border-start-0 ps-0" id="emailInput"
-                     placeholder="ejemplo@correo.com" required value="admin@netx.com">
+                     placeholder="ejemplo@correo.com" required>
             </div>
           </div>
 
@@ -45,7 +45,7 @@
             <div class="input-group">
               <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
               <input type="password" class="form-control border-start-0 ps-0" id="passwordInput"
-                     placeholder="••••••••" required value="Netx2026*">
+                     placeholder="••••••••" required>
             </div>
           </div>
 
@@ -61,25 +61,9 @@
             <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
           </button>
 
-          <div class="text-center mb-3">
+          <div class="text-center mb-2">
             <span class="small text-muted">¿No tienes cuenta?</span>
             <a href="#" class="small text-primary text-decoration-none ms-1 fw-semibold" onclick="alert('El registro de nuevos miembros lo realiza exclusivamente la Directiva del Capítulo.'); return false;">Solicita membresía</a>
-          </div>
-
-          <!-- Selector rápido de prueba para evaluación docente / desarrollo -->
-          <div class="border-top pt-3 mt-3">
-            <div class="small fw-semibold text-muted mb-2 text-center text-md-start">Acceso Rápido para Pruebas:</div>
-            <div class="d-flex flex-wrap gap-1 justify-content-center justify-content-md-start">
-              <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoLogin('admin@netx.com')">
-                <i class="bi bi-shield-check me-1"></i> Admin
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-warning text-dark" onclick="autoLogin('coordinador@netx.com')">
-                <i class="bi bi-clock-history me-1"></i> Coord.
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-success" onclick="autoLogin('juan.perez@nexuscreativo.com')">
-                <i class="bi bi-person me-1"></i> Miembro
-              </button>
-            </div>
           </div>
         </form>
       </div>
