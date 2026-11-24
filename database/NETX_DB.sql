@@ -79,6 +79,42 @@ CREATE TABLE IF NOT EXISTS reglas_capitulo (
     descripcion VARCHAR(255)
 ) ENGINE=InnoDB;
 
+-- 5.1 REFERIDOS (HU-18, HU-19)
+-- Un miembro (generador) entrega un prospecto a otro miembro (receptor).
+-- Estados del embudo: Referido -> Contacto -> Reunion 1-a-1 -> Oportunidad
+-- -> Cotizacion -> Ganado | Perdido. Los 5 primeros se consideran "activos".
+CREATE TABLE IF NOT EXISTS referidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_generador INT NOT NULL,
+    id_receptor INT NOT NULL,
+    prospecto_nombre VARCHAR(150) NOT NULL,
+    prospecto_empresa VARCHAR(150) NOT NULL,
+    prospecto_telefono VARCHAR(20),
+    prospecto_email VARCHAR(150),
+    giro_requerido VARCHAR(100),
+    necesidad VARCHAR(500) NOT NULL,
+    es_urgente BOOLEAN NOT NULL DEFAULT FALSE,
+    estado ENUM('Referido', 'Contacto', 'Reunión 1-a-1', 'Oportunidad',
+                'Cotización', 'Ganado', 'Perdido')
+           NOT NULL DEFAULT 'Referido',
+    fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    -- Acelera el candado de duplicados activos por receptor (HU-19).
+    INDEX idx_referidos_receptor_estado (id_receptor, estado),
+    INDEX idx_referidos_generador (id_generador),
+
+    CONSTRAINT fk_referidos_generador
+        FOREIGN KEY (id_generador)
+        REFERENCES miembros(id_miembro),
+
+    CONSTRAINT fk_referidos_receptor
+        FOREIGN KEY (id_receptor)
+        REFERENCES miembros(id_miembro),
+
+    CONSTRAINT chk_referidos_distintos
+        CHECK (id_generador <> id_receptor)
+) ENGINE=InnoDB;
+
 -- 6. ROLES INICIALES
 INSERT IGNORE INTO roles (nombre, descripcion)
 VALUES
