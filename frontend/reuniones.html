@@ -54,24 +54,29 @@
         <div class="card p-3 p-md-4 mb-4 border-primary-subtle bg-light">
           <div class="row align-items-center">
             <div class="col-12 col-md-8">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="badge bg-success">Reunión #38 en Curso</span>
-                <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>Martes 27 de Octubre, 2026</span>
-                <span class="text-muted small"><i class="bi bi-clock me-1"></i>08:00 AM - 09:30 AM</span>
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <select class="form-select form-select-sm w-auto fw-semibold border-primary-subtle" id="selectReunionActiva" aria-label="Seleccionar reunión">
+                  <!-- Dinámico -->
+                </select>
+                <span class="badge bg-success" id="reunionBadgeEstado">En curso</span>
+                <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i><span id="reunionFechaTexto">...</span></span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i><span id="reunionHoraTexto">08:00 - 09:30</span></span>
               </div>
               <h2 class="h5 fw-bold text-dark mb-1" id="reunionSede">Hotel Fiesta Inn Morelia - Salón Independencia</h2>
-              <div class="small text-muted">
-                Capacitación semanal: <strong class="text-dark">Estrategias de Venta Consultiva B2B</strong> (Dr.
-                Claudio Ernesto Florián)
+              <div class="small text-muted d-flex flex-wrap align-items-center gap-2">
+                <span id="reunionCapacitacionTxt">Capacitación semanal: <strong class="text-dark">Por definir</strong></span>
+                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalEditarCapacitacion">
+                  <i class="bi bi-pencil-square me-1"></i>Editar capacitación
+                </button>
               </div>
             </div>
             <div class="col-12 col-md-4 mt-3 mt-md-0 text-md-end">
               <div class="d-flex flex-wrap justify-content-md-end gap-2">
-                <span class="badge bg-white text-dark border p-2">
-                  <i class="bi bi-people text-primary me-1"></i> 8 Miembros Registrados
+                <span class="badge bg-white text-dark border p-2" id="reunionConteoMiembros">
+                  <i class="bi bi-people text-primary me-1"></i> 0 Miembros Activos
                 </span>
-                <span class="badge bg-white text-dark border p-2">
-                  <i class="bi bi-person-badge text-warning me-1"></i> 2 Invitados
+                <span class="badge bg-white text-dark border p-2" id="reunionConteoInvitados">
+                  <i class="bi bi-person-badge text-warning me-1"></i> 0 Invitados
                 </span>
               </div>
             </div>
@@ -172,11 +177,11 @@
                   </div>
 
                   <h3 class="h5 fw-bold text-dark mb-1">Mi Asistencia</h3>
-                  <p class="text-muted small mb-3">Reunión del 27 de Octubre de 2026</p>
+                  <p class="text-muted small mb-3" id="movilFechaReunion">Reunión seleccionada</p>
 
                   <div class="bg-light p-3 rounded mb-3 small text-muted">
-                    <div><i class="bi bi-clock me-1 text-primary"></i> 8:00 AM - 09:30 AM</div>
-                    <div><i class="bi bi-geo-alt me-1 text-danger"></i> Hotel Fiesta Inn Morelia</div>
+                    <div><i class="bi bi-clock me-1 text-primary"></i> <span id="movilHorarioReunion">08:00 - 09:30</span></div>
+                    <div><i class="bi bi-geo-alt me-1 text-danger"></i> <span id="movilSedeReunion">Sede</span></div>
                   </div>
 
                   <div class="d-grid gap-2 mb-4">
@@ -268,6 +273,17 @@
                     <span><i class="bi bi-circle-fill text-danger me-1"></i> 00:00: Fin de turno</span>
                   </div>
                 </div>
+
+                <!-- Pitches registrados en la reunión activa -->
+                <div class="card p-3 mt-3 shadow-sm">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h3 class="h6 fw-bold mb-0 text-dark">Pitches Registrados en esta Sesión</h3>
+                    <span class="badge bg-primary-subtle text-primary" id="conteoPitchesReunion">0 registrados</span>
+                  </div>
+                  <div class="list-group list-group-flush small" id="listaPitchesReunion">
+                    <!-- Dinámico -->
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -276,46 +292,26 @@
           <!-- PESTAÑA 4: PRESENTACIONES CENTRALES DE 10 MIN -->
           <!-- ========================================================= -->
           <div class="tab-pane fade" id="panel-ponencias" role="tabpanel">
-            <div class="row g-3">
-              <div class="col-12 col-lg-6">
-                <div class="card p-3 h-100">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="badge bg-primary">Ponente Central 1 (10 Minutos)</span>
-                    <button class="btn btn-sm btn-outline-secondary"
-                      onclick="alert('Reprogramación de ponente guardada.');">
-                      <i class="bi bi-arrow-repeat me-1"></i> Reprogramar
-                    </button>
-                  </div>
-                  <h3 class="h5 fw-bold text-dark mt-2 mb-1">Juan Pérez</h3>
-                  <div class="text-muted small mb-2">Giro: Marketing y Publicidad · Nexus Creativo</div>
-                  <div class="p-3 bg-light rounded small">
-                    <strong>Tema de Ponencia:</strong> "Estrategias de Growth Marketing B2B y Generación de Leads en
-                    Redes Sociales".
-                  </div>
-                </div>
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+              <div>
+                <h2 class="h6 fw-bold mb-0 text-dark">Ponentes Centrales de la Sesión (<span id="lblDuracionPonencia">10</span> min)</h2>
+                <small class="text-muted">Asignación automática por rotación cíclica o reprogramación manual.</small>
               </div>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="btnRotacionPonentes">
+                <i class="bi bi-shuffle me-1"></i> Asignar 2 Ponentes por Rotación
+              </button>
+            </div>
 
-              <div class="col-12 col-lg-6">
-                <div class="card p-3 h-100">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="badge bg-primary">Ponente Central 2 (10 Minutos)</span>
-                    <button class="btn btn-sm btn-outline-secondary"
-                      onclick="alert('Reprogramación de ponente guardada.');">
-                      <i class="bi bi-arrow-repeat me-1"></i> Reprogramar
-                    </button>
-                  </div>
-                  <h3 class="h5 fw-bold text-dark mt-2 mb-1">María González</h3>
-                  <div class="text-muted small mb-2">Giro: IT / Desarrollo de Software · CodePoint Solutions</div>
-                  <div class="p-3 bg-light rounded small">
-                    <strong>Tema de Ponencia:</strong> "Automatización de Procesos Empresariales y Soluciones Cloud para
-                    PyMEs".
-                  </div>
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="row g-3" id="contenedorPonentes">
+                  <!-- Dinámico (2 ponentes centrales) -->
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="card p-3">
-                  <h3 class="h6 fw-bold mb-3 text-dark">Historial de Ponencias Ejecutadas</h3>
+                  <h3 class="h6 fw-bold mb-3 text-dark">Historial Anual de Ponencias Ejecutadas</h3>
                   <div class="table-responsive">
                     <table class="table table-sm table-hover align-middle mb-0">
                       <thead class="table-light">
@@ -327,21 +323,8 @@
                           <th>Tema</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        <tr>
-                          <td>#37</td>
-                          <td>2026-10-20</td>
-                          <td>Luis Morales</td>
-                          <td>Inmobiliaria</td>
-                          <td>Oportunidades de inversión en naves industriales</td>
-                        </tr>
-                        <tr>
-                          <td>#37</td>
-                          <td>2026-10-20</td>
-                          <td>Sofía Castro</td>
-                          <td>Recursos Humanos</td>
-                          <td>Retención de talento clave en empresas medianas</td>
-                        </tr>
+                      <tbody id="tablaHistorialPonencias">
+                        <!-- Dinámico -->
                       </tbody>
                     </table>
                   </div>
@@ -357,6 +340,16 @@
             <div class="row g-3">
               <div class="col-12 col-lg-7">
                 <div class="card p-3 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <div>
+                      <div class="small text-muted">Capacitación Semanal</div>
+                      <div class="fw-bold text-dark" id="agendaCapacitacionTema">Por definir</div>
+                      <small class="text-primary" id="agendaCapacitacionInstructor">Instructor por definir</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalEditarCapacitacion">
+                      <i class="bi bi-pencil me-1"></i> Editar
+                    </button>
+                  </div>
                   <h3 class="h6 fw-bold text-dark mb-3">Orden del Día Estructurado</h3>
                   <ol class="list-group list-group-numbered list-group-flush small" id="listaOrdenDelDia">
                     <!-- Dinámico -->
@@ -465,6 +458,133 @@
     </div>
   </div>
 
+  <!-- MODAL: PROGRAMAR NUEVA REUNIÓN (HU-11) -->
+  <div class="modal fade" id="modalNuevaReunion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="h5 modal-title fw-bold">Programar Nueva Reunión Semanal</h2>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formNuevaReunion">
+          <div class="modal-body p-4">
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-4">
+                <label for="nuevaReunionFecha" class="form-label small fw-semibold">Fecha *</label>
+                <input type="date" class="form-control" id="nuevaReunionFecha" required>
+              </div>
+              <div class="col-6 col-md-4">
+                <label for="nuevaReunionHoraInicio" class="form-label small fw-semibold">Hora Inicio *</label>
+                <input type="time" class="form-control" id="nuevaReunionHoraInicio" value="08:00" required>
+              </div>
+              <div class="col-6 col-md-4">
+                <label for="nuevaReunionHoraFin" class="form-label small fw-semibold">Hora Fin *</label>
+                <input type="time" class="form-control" id="nuevaReunionHoraFin" value="09:30" required>
+              </div>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-8">
+                <label for="nuevaReunionSede" class="form-label small fw-semibold">Sede / Lugar *</label>
+                <input type="text" class="form-control" id="nuevaReunionSede" placeholder="Ej. Hotel Fiesta Inn Morelia - Salón Independencia" required>
+              </div>
+              <div class="col-12 col-md-4">
+                <label for="nuevaReunionEstado" class="form-label small fw-semibold">Estado Inicial *</label>
+                <select class="form-select" id="nuevaReunionEstado" required>
+                  <option value="Programada">Programada</option>
+                  <option value="En curso">En curso</option>
+                  <option value="Finalizada">Finalizada</option>
+                </select>
+              </div>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label for="nuevaReunionCapTema" class="form-label small fw-semibold">Tema de Capacitación (opcional)</label>
+                <input type="text" class="form-control" id="nuevaReunionCapTema" placeholder="Ej. Estrategias de Negociación B2B">
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="nuevaReunionCapInstructor" class="form-label small fw-semibold">Ponente de Capacitación (opcional)</label>
+                <input type="text" class="form-control" id="nuevaReunionCapInstructor" placeholder="Ej. Invitado Especial / Socio">
+              </div>
+            </div>
+            <div class="mb-0">
+              <label for="nuevaReunionOrdenDia" class="form-label small fw-semibold">Orden del Día (un punto por línea) *</label>
+              <textarea class="form-control" id="nuevaReunionOrdenDia" rows="5" required>08:00 - Registro y networking libre matutino
+08:15 - Apertura formal por el Presidente del Capítulo
+08:25 - Presentaciones centrales de 10 min (2 ponentes titulares)
+08:45 - Rueda de pitches semanales de 2 min por socio
+09:10 - Intercambio de referidos y cierre</textarea>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold">
+              <i class="bi bi-calendar-check me-1"></i> Guardar Reunión
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR CAPACITACIÓN SEMANAL (HU-12) -->
+  <div class="modal fade" id="modalEditarCapacitacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h2 class="h5 modal-title fw-bold text-dark">Capacitación de la Sesión</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formCapacitacion">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label for="editCapTema" class="form-label small fw-semibold">Tema de la Capacitación *</label>
+              <input type="text" class="form-control" id="editCapTema" placeholder="Ej. Cierre de ventas consultivas" required>
+            </div>
+            <div class="mb-0">
+              <label for="editCapInstructor" class="form-label small fw-semibold">Ponente / Instructor *</label>
+              <input type="text" class="form-control" id="editCapInstructor" placeholder="Nombre del ponente" required>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold">Guardar Capacitación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REPROGRAMAR PONENTE CENTRAL (HU-17) -->
+  <div class="modal fade" id="modalReprogramarPonente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h2 class="h5 modal-title fw-bold text-dark">Reprogramar Presentación Central</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form id="formReprogramarPonente">
+          <input type="hidden" id="reprogramarSlotIndex" value="0">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label for="reprogramarPonenteSelect" class="form-label small fw-semibold">Socio Ponente *</label>
+              <select class="form-select" id="reprogramarPonenteSelect" required>
+                <!-- Dinámico -->
+              </select>
+            </div>
+            <div class="mb-0">
+              <label for="reprogramarPonenciaTema" class="form-label small fw-semibold">Tema de la Ponencia *</label>
+              <input type="text" class="form-control" id="reprogramarPonenciaTema" placeholder="Ej. Estrategias digitales B2B" required>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold">Guardar Reprogramación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/store.js"></script>
@@ -473,100 +593,306 @@
   <script src="assets/js/main.js"></script>
 
   <script>
+    let reunionActivaId = null;
     let pitchInterval = null;
     let pitchSegundosRestantes = 120;
     let pitchEnEjecucion = false;
 
+    const escHtml = (str) => String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+    const formatSegundos = (segs) => {
+      const s = Math.max(0, Number(segs) || 0);
+      const mins = Math.floor(s / 60);
+      const rem = s % 60;
+      return `${String(mins).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
-      cargarAsistenciaAdmin();
-      cargarAgendaEInvitados();
-      cargarSociosPitch();
+      inicializarReunionActiva();
+      cargarSelectorReuniones();
+      renderizarTodaLaReunion();
+
+      // Cambio de reunión seleccionada
+      document.getElementById('selectReunionActiva').addEventListener('change', (e) => {
+        reunionActivaId = Number(e.target.value);
+        renderizarTodaLaReunion();
+      });
 
       // Botón marcar asistencia móvil
       document.getElementById('btnMarcarAsistenciaMovil').addEventListener('click', () => {
+        if (!reunionActivaId) return;
         const currentUser = window.NetxStore.getCurrentUser();
-        window.NetxStore.marcarAsistenciaMiembro(38, currentUser.id, 'Presente');
-        document.getElementById('bannerAsistenciaMovil').className = 'alert alert-success py-2 mb-3 small d-flex align-items-center gap-2';
-        document.getElementById('txtEstadoMovil').textContent = 'Asistencia enviada. El administrador confirmará pronto.';
+        window.NetxStore.marcarAsistenciaMiembro(reunionActivaId, currentUser.id, 'Presente');
         cargarAsistenciaAdmin();
+        actualizarEstadoMovil();
         window.NetxAlert('Asistencia móvil enviada exitosamente.');
       });
 
       // Submit Suplente
       document.getElementById('formSuplente').addEventListener('submit', (e) => {
         e.preventDefault();
+        if (!reunionActivaId) return;
         const currentUser = window.NetxStore.getCurrentUser();
         const nom = document.getElementById('inputNombreSuplente').value.trim();
         const cargo = document.getElementById('inputCargoSuplente').value.trim();
         const descSuplente = `${nom} (${cargo})`;
 
-        window.NetxStore.marcarAsistenciaMiembro(38, currentUser.id, 'Suplente', descSuplente);
+        window.NetxStore.marcarAsistenciaMiembro(reunionActivaId, currentUser.id, 'Suplente', descSuplente);
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalRegistrarSuplente'));
         if (modal) modal.hide();
-        document.getElementById('bannerAsistenciaMovil').className = 'alert alert-info py-2 mb-3 small d-flex align-items-center gap-2';
-        document.getElementById('txtEstadoMovil').textContent = `Suplente registrado: ${nom}. Pendiente de confirmación.`;
+        e.target.reset();
         cargarAsistenciaAdmin();
+        actualizarEstadoMovil();
         window.NetxAlert('Suplente registrado correctamente.');
       });
 
       // Submit Invitado
       document.getElementById('formInvitado').addEventListener('submit', (e) => {
         e.preventDefault();
+        if (!reunionActivaId) return;
         const inv = {
           nombre: document.getElementById('invitadoNombre').value.trim(),
           empresa: document.getElementById('invitadoEmpresa').value.trim(),
           invitadoPor: document.getElementById('invitadoPorSelect').value
         };
-        window.NetxStore.agregarInvitadoReunion(38, inv);
+        window.NetxStore.agregarInvitadoReunion(reunionActivaId, inv);
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarInvitado'));
         if (modal) modal.hide();
+        e.target.reset();
+        renderizarCabeceraReunion();
         cargarAgendaEInvitados();
         window.NetxAlert('Invitado registrado en la sesión.');
+      });
+
+      // Preparar modal Nueva Reunión (HU-11)
+      document.getElementById('modalNuevaReunion').addEventListener('show.bs.modal', () => {
+        const rules = window.NetxStore.getRules ? window.NetxStore.getRules() : {};
+        const fechaEl = document.getElementById('nuevaReunionFecha');
+        if (!fechaEl.value) fechaEl.value = new Date().toISOString().split('T')[0];
+        const sedeEl = document.getElementById('nuevaReunionSede');
+        if (!sedeEl.value && rules.sedeHabitual) sedeEl.value = rules.sedeHabitual;
+      });
+
+      // Submit Nueva Reunión (HU-11)
+      document.getElementById('formNuevaReunion').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const ordenLines = document.getElementById('nuevaReunionOrdenDia').value
+          .split('\n')
+          .map(l => l.trim())
+          .filter(Boolean);
+
+        const nueva = window.NetxStore.saveMeeting({
+          fecha: document.getElementById('nuevaReunionFecha').value,
+          horaInicio: document.getElementById('nuevaReunionHoraInicio').value,
+          horaFin: document.getElementById('nuevaReunionHoraFin').value,
+          sede: document.getElementById('nuevaReunionSede').value.trim(),
+          estado: document.getElementById('nuevaReunionEstado').value,
+          capacitacionTema: document.getElementById('nuevaReunionCapTema').value.trim(),
+          capacitacionInstructor: document.getElementById('nuevaReunionCapInstructor').value.trim(),
+          ordenDelDia: ordenLines.length > 0 ? ordenLines : undefined
+        });
+
+        if (nueva && nueva.id) reunionActivaId = nueva.id;
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaReunion'));
+        if (modal) modal.hide();
+        e.target.reset();
+        cargarSelectorReuniones();
+        renderizarTodaLaReunion();
+        window.NetxAlert(`Reunión #${nueva.numero || nueva.id} programada con 2 ponentes asignados por rotación.`);
+      });
+
+      // Preparar y guardar Capacitación Semanal (HU-12)
+      document.getElementById('modalEditarCapacitacion').addEventListener('show.bs.modal', () => {
+        const reunion = window.NetxStore.getMeetingById(reunionActivaId);
+        const cap = (reunion && reunion.capacitacion) || {};
+        document.getElementById('editCapTema').value = cap.tema || '';
+        document.getElementById('editCapInstructor').value = cap.instructor || '';
+      });
+
+      document.getElementById('formCapacitacion').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!reunionActivaId) return;
+        window.NetxStore.actualizarCapacitacion(reunionActivaId, {
+          tema: document.getElementById('editCapTema').value.trim(),
+          instructor: document.getElementById('editCapInstructor').value.trim()
+        });
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarCapacitacion'));
+        if (modal) modal.hide();
+        renderizarCabeceraReunion();
+        cargarAgendaEInvitados();
+        window.NetxAlert('Capacitación semanal actualizada correctamente.');
+      });
+
+      // Rotación automática y reprogramación de ponentes (HU-16, HU-17)
+      document.getElementById('btnRotacionPonentes').addEventListener('click', () => {
+        if (!reunionActivaId) return;
+        window.NetxStore.generarRotacionPonentes(reunionActivaId);
+        cargarPonencias();
+        window.NetxAlert('Ponentes centrales asignados por rotación cíclica.');
+      });
+
+      document.getElementById('formReprogramarPonente').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!reunionActivaId) return;
+        const slotIndex = Number(document.getElementById('reprogramarSlotIndex').value);
+        const nuevoMiembroId = Number(document.getElementById('reprogramarPonenteSelect').value);
+        const tema = document.getElementById('reprogramarPonenciaTema').value.trim();
+
+        window.NetxStore.reprogramarPonente(reunionActivaId, slotIndex, nuevoMiembroId, tema);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalReprogramarPonente'));
+        if (modal) modal.hide();
+        cargarPonencias();
+        window.NetxAlert('Presentación central reprogramada y guardada.');
       });
 
       // Cronómetro
       configurarCronometro();
     });
 
-    function cargarAsistenciaAdmin() {
-      if (!window.NetxStore) return;
-      const tbody = document.getElementById('tablaAsistenciaAdmin');
-      const asistencias = window.NetxStore.getAttendance(38);
+    function inicializarReunionActiva() {
+      const meetings = window.NetxStore.getMeetings();
+      if (!meetings || meetings.length === 0) return;
+      const enCurso = meetings.find(m => m.estado === 'En curso') || meetings[0];
+      reunionActivaId = enCurso.id;
+    }
+
+    function cargarSelectorReuniones() {
+      const select = document.getElementById('selectReunionActiva');
+      const meetings = window.NetxStore.getMeetings();
+      if (!meetings || meetings.length === 0) {
+        select.innerHTML = '<option value="">Sin reuniones</option>';
+        return;
+      }
+      select.innerHTML = meetings.map(m =>
+        `<option value="${m.id}">Reunión #${m.numero || m.id} (${m.fecha}) · ${m.estado}</option>`
+      ).join('');
+      if (reunionActivaId) select.value = String(reunionActivaId);
+    }
+
+    function renderizarTodaLaReunion() {
+      renderizarCabeceraReunion();
+      cargarAsistenciaAdmin();
+      actualizarEstadoMovil();
+      cargarAgendaEInvitados();
+      cargarSociosPitch();
+      cargarPitchesReunion();
+      cargarPonencias();
+    }
+
+    function renderizarCabeceraReunion() {
+      const reunion = window.NetxStore.getMeetingById(reunionActivaId);
+      if (!reunion) return;
+
+      const badge = document.getElementById('reunionBadgeEstado');
+      badge.textContent = reunion.estado || 'Programada';
+      badge.className = `badge ${
+        reunion.estado === 'En curso' ? 'bg-success' :
+          reunion.estado === 'Finalizada' ? 'bg-secondary' : 'bg-primary'
+      }`;
+
+      document.getElementById('reunionFechaTexto').textContent = reunion.fecha || '-';
+      document.getElementById('reunionHoraTexto').textContent = `${reunion.horaInicio || '08:00'} - ${reunion.horaFin || '09:30'}`;
+      document.getElementById('reunionSede').textContent = reunion.sede || 'Sede por definir';
+
+      const cap = reunion.capacitacion || {};
+      document.getElementById('reunionCapacitacionTxt').innerHTML =
+        `Capacitación semanal: <strong class="text-dark">${escHtml(cap.tema || 'Por definir')}</strong> (${escHtml(cap.instructor || 'Por definir')})`;
+
       const members = window.NetxStore.getMembers();
+      const invitados = reunion.invitados || [];
+      document.getElementById('reunionConteoMiembros').innerHTML =
+        `<i class="bi bi-people text-primary me-1"></i> ${members.length} Miembros Registrados`;
+      document.getElementById('reunionConteoInvitados').innerHTML =
+        `<i class="bi bi-person-badge text-warning me-1"></i> ${invitados.length} Invitados`;
+
+      document.getElementById('movilFechaReunion').textContent = `Reunión #${reunion.numero || reunion.id} · ${reunion.fecha}`;
+      document.getElementById('movilHorarioReunion').textContent = `${reunion.horaInicio || '08:00'} - ${reunion.horaFin || '09:30'}`;
+      document.getElementById('movilSedeReunion').textContent = reunion.sede || 'Sede por definir';
+    }
+
+    function actualizarEstadoMovil() {
+      if (!reunionActivaId) return;
+      const currentUser = window.NetxStore.getCurrentUser();
+      const asistencias = window.NetxStore.getAttendance(reunionActivaId);
+      const miMarca = asistencias.find(a => a.miembroId === Number(currentUser.id));
+
+      const banner = document.getElementById('bannerAsistenciaMovil');
+      const txt = document.getElementById('txtEstadoMovil');
+
+      if (!miMarca) {
+        banner.className = 'alert alert-warning py-2 mb-3 small d-flex align-items-center gap-2';
+        txt.textContent = 'Sin marca registrada aún para esta sesión.';
+      } else if (miMarca.estado === 'Confirmada') {
+        banner.className = 'alert alert-success py-2 mb-3 small d-flex align-items-center gap-2';
+        txt.textContent = `Asistencia Confirmada (${miMarca.tipo}${miMarca.suplente ? ': ' + miMarca.suplente : ''}).`;
+      } else {
+        banner.className = 'alert alert-info py-2 mb-3 small d-flex align-items-center gap-2';
+        txt.textContent = `Marca enviada (${miMarca.tipo}). Pendiente de confirmación administrativa.`;
+      }
+
+      const listaHist = document.getElementById('listaHistorialMovil');
+      const meetings = window.NetxStore.getMeetings().slice(0, 5);
+      listaHist.innerHTML = meetings.map(m => {
+        const reg = window.NetxStore.getAttendance(m.id).find(a => a.miembroId === Number(currentUser.id));
+        const tipo = reg ? reg.tipo : 'Sin registro';
+        const badgeCls = tipo === 'Presente' ? 'bg-success-subtle text-success' :
+          tipo === 'Suplente' ? 'bg-info-subtle text-info' :
+            tipo === 'Inasistencia' ? 'bg-danger-subtle text-danger' : 'bg-light text-muted';
+        return `
+          <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <span>#${m.numero || m.id} (${m.fecha})</span>
+            <span class="badge ${badgeCls}">${escHtml(tipo)}</span>
+            <span class="text-muted">${escHtml(reg ? reg.horaRegistro : '-')}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function cargarAsistenciaAdmin() {
+      if (!window.NetxStore || !reunionActivaId) return;
+      const tbody = document.getElementById('tablaAsistenciaAdmin');
+      const asistencias = window.NetxStore.getAttendance(reunionActivaId);
+      const members = window.NetxStore.getMembers();
+      const rules = window.NetxStore.getRules ? window.NetxStore.getRules() : {};
+      const maxFaltas = Number(rules.inasistenciasPermitidas ?? 2);
 
       tbody.innerHTML = members.map(m => {
         const asis = asistencias.find(a => a.miembroId === m.id);
         const tipo = asis ? asis.tipo : 'Sin registro';
         const estado = asis ? asis.estado : 'Sin registro';
         const hora = asis ? asis.horaRegistro : '-';
-        const suplente = asis && asis.suplente ? ` <small class="text-info d-block">Suplente: ${asis.suplente}</small>` : '';
+        const suplente = asis && asis.suplente ? ` <small class="text-info d-block">Suplente: ${escHtml(asis.suplente)}</small>` : '';
 
         const badgeTipo = tipo === 'Presente' ? 'badge-presente' :
           tipo === 'Suplente' ? 'badge-suplente' :
             tipo === 'Inasistencia' ? 'badge-inasistencia' : 'bg-secondary';
 
-        const esInfraccion = m.faltasSinSuplente >= 2;
+        const esInfraccion = Number(m.faltasSinSuplente || 0) > maxFaltas;
 
         return `
           <tr>
             <td>
-              <div class="fw-bold text-dark">${m.nombre}</div>
-              <small class="text-muted">${m.empresa}</small>
+              <div class="fw-bold text-dark">${escHtml(m.nombre)}</div>
+              <small class="text-muted">${escHtml(m.empresa)}</small>
             </td>
-            <td><span class="badge bg-light text-dark border">${m.giro}</span></td>
-            <td class="small text-muted">${hora}</td>
+            <td><span class="badge bg-light text-dark border">${escHtml(m.giro)}</span></td>
+            <td class="small text-muted">${escHtml(hora)}</td>
             <td>
               <span class="badge ${estado === 'Confirmada' ? 'bg-success-subtle text-success border border-success' : 'bg-warning-subtle text-warning border border-warning'} px-2 py-1">
-                ${estado}
+                ${escHtml(estado)}
               </span>
             </td>
             <td>
-              <span class="badge ${badgeTipo} px-2 py-1">${tipo}</span>
+              <span class="badge ${badgeTipo} px-2 py-1">${escHtml(tipo)}</span>
               ${suplente}
             </td>
             <td>
               <span class="badge ${esInfraccion ? 'bg-danger' : 'bg-light text-muted border'}">
-                ${m.faltasSinSuplente} ${esInfraccion ? '· ¡Infracción!' : ''}
+                ${m.faltasSinSuplente || 0} ${esInfraccion ? '· ¡Infracción!' : ''}
               </span>
             </td>
             <td class="text-end pe-3">
@@ -588,21 +914,27 @@
     }
 
     function validarAsistencia(miembroId, nuevoEstado, nuevoTipo) {
-      window.NetxStore.confirmarAsistenciaAdmin(38, miembroId, nuevoEstado, nuevoTipo);
+      if (!reunionActivaId) return;
+      window.NetxStore.confirmarAsistenciaAdmin(reunionActivaId, miembroId, nuevoEstado, nuevoTipo);
       cargarAsistenciaAdmin();
+      actualizarEstadoMovil();
       window.NetxAlert(`Asistencia actualizada a [${nuevoTipo} - ${nuevoEstado}].`);
     }
 
     function cargarAgendaEInvitados() {
-      if (!window.NetxStore) return;
-      const reunion = window.NetxStore.getMeetingById(38);
+      if (!window.NetxStore || !reunionActivaId) return;
+      const reunion = window.NetxStore.getMeetingById(reunionActivaId);
       if (!reunion) return;
+
+      const cap = reunion.capacitacion || {};
+      document.getElementById('agendaCapacitacionTema').textContent = cap.tema || 'Por definir';
+      document.getElementById('agendaCapacitacionInstructor').textContent = `Ponente: ${cap.instructor || 'Por definir'}`;
 
       const ol = document.getElementById('listaOrdenDelDia');
       ol.innerHTML = (reunion.ordenDelDia || []).map(item => `
         <li class="list-group-item d-flex justify-content-between align-items-start px-0">
           <div class="ms-2 me-auto">
-            <div class="fw-semibold text-dark">${item}</div>
+            <div class="fw-semibold text-dark">${escHtml(item)}</div>
           </div>
         </li>
       `).join('');
@@ -614,9 +946,9 @@
       } else {
         invitadosDiv.innerHTML = invitados.map(inv => `
           <div class="list-group-item px-0">
-            <div class="fw-bold text-dark">${inv.nombre}</div>
-            <div class="text-muted">${inv.empresa}</div>
-            <small class="text-primary"><i class="bi bi-person-check me-1"></i>Invitado por: ${inv.invitadoPor}</small>
+            <div class="fw-bold text-dark">${escHtml(inv.nombre)}</div>
+            <div class="text-muted">${escHtml(inv.empresa)}</div>
+            <small class="text-primary"><i class="bi bi-person-check me-1"></i>Invitado por: ${escHtml(inv.invitadoPor)}</small>
           </div>
         `).join('');
       }
@@ -624,15 +956,138 @@
       // Llenar select de miembros en form invitado
       const select = document.getElementById('invitadoPorSelect');
       const members = window.NetxStore.getMembers();
-      select.innerHTML = members.map(m => `<option value="${m.nombre}">${m.nombre}</option>`).join('');
+      select.innerHTML = members.map(m => `<option value="${escHtml(m.nombre)}">${escHtml(m.nombre)}</option>`).join('');
     }
 
     function cargarSociosPitch() {
       const select = document.getElementById('selectSocioPitch');
       const members = window.NetxStore.getMembers().filter(m => m.estatus === 'Activo');
       select.innerHTML = members.map(m => `
-        <option value="${m.id}">${m.nombre} (${m.giro} - ${m.empresa})</option>
+        <option value="${m.id}">${escHtml(m.nombre)} (${escHtml(m.giro)} - ${escHtml(m.empresa)})</option>
       `).join('');
+    }
+
+    function cargarPitchesReunion() {
+      if (!window.NetxStore || !reunionActivaId) return;
+      const lista = document.getElementById('listaPitchesReunion');
+      const badge = document.getElementById('conteoPitchesReunion');
+      const pitches = window.NetxStore.getPitchesByMeeting(reunionActivaId);
+
+      badge.textContent = `${pitches.length} registrado${pitches.length === 1 ? '' : 's'}`;
+      if (pitches.length === 0) {
+        lista.innerHTML = '<div class="text-muted py-2">Aún no se han registrado pitches en esta sesión.</div>';
+        return;
+      }
+
+      lista.innerHTML = pitches.map(p => `
+        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+          <div>
+            <div class="fw-semibold text-dark">${escHtml(p.nombre)}</div>
+            <small class="text-muted">${escHtml(p.giro)}</small>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle">
+            <i class="bi bi-stopwatch me-1"></i>${formatSegundos(p.pitchTiempoSeg)}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function cargarPonencias() {
+      if (!window.NetxStore || !reunionActivaId) return;
+      const reunion = window.NetxStore.getMeetingById(reunionActivaId);
+      const rules = window.NetxStore.getRules ? window.NetxStore.getRules() : {};
+      const duracionPonencia = rules.duracionPresentacionMinutos || 10;
+      document.getElementById('lblDuracionPonencia').textContent = duracionPonencia;
+
+      const members = window.NetxStore.getMembers();
+      const contenedor = document.getElementById('contenedorPonentes');
+      const ponentes = (reunion && reunion.ponentesPrincipales) || [];
+
+      if (ponentes.length === 0) {
+        contenedor.innerHTML = `
+          <div class="col-12">
+            <div class="alert alert-light border small text-muted mb-0">
+              No hay ponentes asignados para esta reunión. Usa <strong>Asignar 2 Ponentes por Rotación</strong>.
+            </div>
+          </div>`;
+      } else {
+        contenedor.innerHTML = ponentes.map((p, idx) => {
+          const mem = members.find(m => m.id === Number(p.miembroId));
+          const giro = p.giro || (mem ? mem.giro : 'Por asignar');
+          const empresa = p.empresa || (mem ? mem.empresa : '');
+          const ejecutada = p.ejecutada === true || (reunion.estado === 'Finalizada' && p.ejecutada !== false);
+
+          return `
+            <div class="col-12 col-lg-6">
+              <div class="card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-2 flex-wrap">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary">Ponente Central ${idx + 1} (${duracionPonencia} Minutos)</span>
+                    <span class="badge ${ejecutada ? 'bg-success-subtle text-success' : 'bg-light text-muted border'}">
+                      ${ejecutada ? 'Ejecutada' : 'Programada'}
+                    </span>
+                  </div>
+                  <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-success" onclick="togglePonenciaEjecutada(${idx}, ${!ejecutada})">
+                      <i class="bi bi-check2-square me-1"></i>${ejecutada ? 'Completada' : 'Marcar ejecutada'}
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="abrirModalReprogramarPonente(${idx})">
+                      <i class="bi bi-arrow-repeat me-1"></i> Reprogramar
+                    </button>
+                  </div>
+                </div>
+                <h3 class="h5 fw-bold text-dark mt-2 mb-1">${escHtml(p.nombre)}</h3>
+                <div class="text-muted small mb-2">Giro: ${escHtml(giro)}${empresa ? ' · ' + escHtml(empresa) : ''}</div>
+                <div class="p-3 bg-light rounded small">
+                  <strong>Tema de Ponencia:</strong> "${escHtml(p.tema || 'Por definir')}".
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const tbodyHist = document.getElementById('tablaHistorialPonencias');
+      const historial = window.NetxStore.getHistorialPresentaciones();
+      if (historial.length === 0) {
+        tbodyHist.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Sin ponencias ejecutadas registradas aún.</td></tr>';
+      } else {
+        tbodyHist.innerHTML = historial.map(h => `
+          <tr>
+            <td>#${escHtml(h.numero)}</td>
+            <td>${escHtml(h.fecha)}</td>
+            <td class="fw-semibold">${escHtml(h.nombre)}</td>
+            <td>${escHtml(h.giro)}</td>
+            <td>${escHtml(h.tema)}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function abrirModalReprogramarPonente(slotIndex) {
+      const reunion = window.NetxStore.getMeetingById(reunionActivaId);
+      const ponentes = (reunion && reunion.ponentesPrincipales) || [];
+      const actual = ponentes[slotIndex] || {};
+
+      const select = document.getElementById('reprogramarPonenteSelect');
+      const activos = window.NetxStore.getMembers().filter(m => m.estatus === 'Activo');
+      select.innerHTML = activos.map(m =>
+        `<option value="${m.id}">${escHtml(m.nombre)} (${escHtml(m.giro)})</option>`
+      ).join('');
+
+      document.getElementById('reprogramarSlotIndex').value = String(slotIndex);
+      if (actual.miembroId) select.value = String(actual.miembroId);
+      document.getElementById('reprogramarPonenciaTema').value = actual.tema || '';
+
+      const modal = new bootstrap.Modal(document.getElementById('modalReprogramarPonente'));
+      modal.show();
+    }
+
+    function togglePonenciaEjecutada(slotIndex, nuevoEstado) {
+      if (!reunionActivaId) return;
+      window.NetxStore.marcarPonenciaEjecutada(reunionActivaId, slotIndex, nuevoEstado);
+      cargarPonencias();
+      window.NetxAlert(nuevoEstado ? 'Ponencia registrada en el historial anual.' : 'Ponencia marcada como programada.');
     }
 
     function configurarCronometro() {
@@ -643,15 +1098,16 @@
       const btnCompletar = document.getElementById('btnCompletarPitch');
       const txtEstado = document.getElementById('estadoCronometroTxt');
 
-      const rules = window.NetxStore.getRules();
-      const duracionBase = rules.duracionPitchSegundos || 120;
+      const getDuracionBase = () => {
+        const rules = window.NetxStore.getRules();
+        return Number(rules.duracionPitchSegundos || 120);
+      };
+
+      let duracionBase = getDuracionBase();
       pitchSegundosRestantes = duracionBase;
 
       const actualizarDisplay = () => {
-        const mins = Math.floor(pitchSegundosRestantes / 60);
-        const segs = pitchSegundosRestantes % 60;
-        display.textContent = `${String(mins).padStart(2, '0')}:${String(segs).padStart(2, '0')}`;
-
+        display.textContent = formatSegundos(pitchSegundosRestantes);
         display.classList.remove('timer-warning', 'timer-danger');
         if (pitchSegundosRestantes === 0) {
           display.classList.add('timer-danger');
@@ -694,17 +1150,20 @@
       btnReiniciar.addEventListener('click', () => {
         clearInterval(pitchInterval);
         pitchEnEjecucion = false;
+        duracionBase = getDuracionBase();
         pitchSegundosRestantes = duracionBase;
         actualizarDisplay();
         btnPausar.classList.add('d-none');
         btnIniciar.classList.remove('d-none');
-        txtEstado.textContent = 'Cronómetro reiniciado a 2 minutos.';
+        txtEstado.textContent = `Cronómetro reiniciado a ${formatSegundos(duracionBase)}.`;
       });
 
       btnCompletar.addEventListener('click', () => {
+        if (!reunionActivaId) return;
         const socioId = Number(document.getElementById('selectSocioPitch').value);
-        const tiempoUsado = duracionBase - pitchSegundosRestantes;
-        window.NetxStore.registrarPitch(38, socioId, tiempoUsado);
+        const tiempoUsado = Math.max(1, duracionBase - pitchSegundosRestantes);
+        window.NetxStore.registrarPitch(reunionActivaId, socioId, tiempoUsado);
+        cargarPitchesReunion();
 
         // Avanzar al siguiente socio en el selector
         const select = document.getElementById('selectSocioPitch');
