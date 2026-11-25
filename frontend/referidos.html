@@ -118,7 +118,7 @@
           <!-- 6. Ganado / Perdido (Cierre) -->
           <div class="pipeline-col" id="col-Ganado">
             <div class="pipeline-header text-success">
-              <span>6. Ganado (GNC)</span>
+              <span>6. Ganado / Perdido</span>
               <span class="badge bg-success" id="badge-count-Ganado">0</span>
             </div>
             <div class="pipeline-list" id="lista-Ganado"></div>
@@ -253,29 +253,83 @@
   <script src="assets/js/main.js"></script>
 
   <script>
+    // Referidos desde MySQL vía backend/api/referrals.php (GET, POST, PATCH)
+    // y receptores desde backend/api/members.php.
+    const API_REFERIDOS = '../backend/api/referrals.php';
+    const API_MIEMBROS  = '../backend/api/members.php';
+    const FASES = ['Referido', 'Contacto', 'Reunión 1-a-1', 'Oportunidad', 'Cotización', 'Ganado', 'Perdido'];
+
+    let referidosCache = [];
+    let miembrosCache  = [];
+
+    // Los datos los capturan usuarios: escapar todo lo que va a innerHTML.
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const primerNombre = (n) => String(n || '').split(' ')[0];
+    const pesos = (n) => Number(n).toLocaleString('es-MX', { maximumFractionDigits: 2 });
+
+    /** fetch JSON con la cookie de sesión. Lanza Error con el mensaje del servidor. */
+    async function api(url, opciones = {}) {
+      const resp = await fetch(url, {
+        credentials: 'same-origin',
+        ...opciones,
+        headers: opciones.body ? { 'Content-Type': 'application/json' } : undefined
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (resp.status === 401) {               // sesión vencida
+        location.replace('login.html');
+        throw new Error('Sesión expirada.');
+      }
+      if (!resp.ok || !data.success) {
+        const err = new Error(data.message || `Error ${resp.status}`);
+        err.status = resp.status;
+        throw err;
+      }
+      return data;
+    }
+
+    const miIdMiembro = () => window.NetxAuth?.user?.idMiembro ?? null;
+    const soyAdmin    = () => window.NetxAuth?.rol === 'administrador';
+
     document.addEventListener('DOMContentLoaded', () => {
       cargarReceptoresSelect();
-      renderizarTableroEmbudo();
+      cargarReferidos();
 
-      // Submit Form Referido
       document.getElementById('formReferido').addEventListener('submit', guardarReferidoHandler);
       document.getElementById('formNegocioGanado').addEventListener('submit', guardarGanadoHandler);
+
+      // Si se cancela el modal de "Ganado", la tarjeta vuelve a su fase real.
+      document.getElementById('modalNegocioGanado').addEventListener('hidden.bs.modal', renderizarTableroEmbudo);
+      document.getElementById('modalEmitirReferido').addEventListener('show.bs.modal', () => {
+        document.getElementById('alertaDuplicado').classList.add('d-none');
+      });
     });
 
-    function cargarReceptoresSelect() {
-      if (!window.NetxStore) return;
+    async function cargarReceptoresSelect() {
       const select = document.getElementById('selectReceptor');
-      const currentUser = window.NetxStore.getCurrentUser();
-      const members = window.NetxStore.getMembers().filter(m => m.estatus === 'Activo' && m.id !== currentUser.id);
+      try {
+        const { miembros } = await api(API_MIEMBROS);
+        miembrosCache = miembros.filter(m => m.id !== miIdMiembro());
+        select.innerHTML = '<option value="">Selecciona al socio receptor...</option>' +
+          miembrosCache.map(m =>
+            `<option value="${m.id}">${esc(m.nombre)} — ${esc(m.giro)} (${esc(m.empresa)})</option>`).join('');
+      } catch (err) {
+        select.innerHTML = '<option value="">No se pudieron cargar los socios</option>';
+        window.NetxAlert(err.message, 'danger');
+      }
+    }
 
-      select.innerHTML = '<option value="">Selecciona al socio receptor...</option>' +
-        members.map(m => `<option value="${m.id}">${m.nombre} — ${m.giro} (${m.empresa})</option>`).join('');
+    async function cargarReferidos() {
+      try {
+        const { referidos } = await api(API_REFERIDOS);
+        referidosCache = referidos;
+        renderizarTableroEmbudo();
+      } catch (err) {
+        window.NetxAlert('No se pudieron cargar los referidos: ' + err.message, 'danger');
+      }
     }
 
     function renderizarTableroEmbudo() {
-      if (!window.NetxStore) return;
-      const referidos = window.NetxStore.getReferrals();
-
       const columnas = {
         'Referido': document.getElementById('lista-Referido'),
         'Contacto': document.getElementById('lista-Contacto'),
@@ -284,60 +338,54 @@
         'Cotización': document.getElementById('lista-Cotización'),
         'Ganado': document.getElementById('lista-Ganado')
       };
-
-      // Limpiar listas
+      const conteos = { 'Referido': 0, 'Contacto': 0, 'Reunión 1-a-1': 0, 'Oportunidad': 0, 'Cotización': 0, 'Ganado': 0 };
       Object.values(columnas).forEach(col => col.innerHTML = '');
 
-      const conteos = {
-        'Referido': 0,
-        'Contacto': 0,
-        'Reunión 1-a-1': 0,
-        'Oportunidad': 0,
-        'Cotización': 0,
-        'Ganado': 0
-      };
-
-      referidos.forEach(ref => {
+      referidosCache.forEach(ref => {
         const est = ref.estado;
-        if (!columnas[est]) return;
-        conteos[est]++;
+        const colKey = est === 'Perdido' ? 'Ganado' : est;   // la columna 6 agrupa los cierres
+        if (!columnas[colKey]) return;
+        conteos[colKey]++;
+
+        const cerrado  = est === 'Ganado' || est === 'Perdido';
+        const editable = !cerrado && (soyAdmin() || ref.receptorId === miIdMiembro());
+        const opciones = FASES.map((f, i) =>
+          `<option value="${esc(f)}" ${est === f ? 'selected' : ''}>${i < 6 ? i + 1 : 6}. ${esc(f)}</option>`).join('');
 
         const card = document.createElement('div');
         card.className = 'pipeline-card';
         card.innerHTML = `
           <div class="d-flex justify-content-between align-items-start mb-1">
             <span class="badge bg-light text-muted border small">#${ref.id}</span>
-            ${ref.esUrgente ? '<span class="badge bg-danger-subtle text-danger"><i class="bi bi-fire"></i> Urgente</span>' : ''}
-            ${ref.montoGanado > 0 ? `<span class="badge bg-success">$${ref.montoGanado.toLocaleString()} MXN</span>` : ''}
+            ${ref.esUrgente && !cerrado ? '<span class="badge bg-danger-subtle text-danger"><i class="bi bi-fire"></i> Urgente</span>' : ''}
+            ${est === 'Ganado' ? `<span class="badge bg-success">$${pesos(ref.montoGanado)} MXN</span>` : ''}
+            ${est === 'Perdido' ? '<span class="badge bg-secondary">Perdido</span>' : ''}
           </div>
-          <div class="fw-bold text-dark mb-1">${ref.prospectoEmpresa || ref.prospectoNombre}</div>
-          <div class="small text-muted mb-2"><i class="bi bi-person me-1"></i>${ref.prospectoNombre} (${ref.prospectoTelefono})</div>
-          
+          <div class="fw-bold text-dark mb-1">${esc(ref.prospectoEmpresa || ref.prospectoNombre)}</div>
+          <div class="small text-muted mb-2"><i class="bi bi-person me-1"></i>${esc(ref.prospectoNombre)}${ref.prospectoTelefono ? ` (${esc(ref.prospectoTelefono)})` : ''}</div>
+
           <div class="p-2 bg-light rounded small mb-2 text-secondary" style="font-size: 0.8rem;">
-            ${ref.necesidad}
+            ${esc(ref.necesidad)}
           </div>
 
           <div class="d-flex justify-content-between align-items-center small text-muted border-top pt-2 mt-2">
             <div>
-              <span class="d-block" style="font-size: 0.72rem;">De: <strong>${ref.generadorNombre.split(' ')[0]}</strong></span>
-              <span class="d-block" style="font-size: 0.72rem;">Para: <strong>${ref.receptorNombre.split(' ')[0]}</strong></span>
+              <span class="d-block" style="font-size: 0.72rem;">De: <strong>${esc(primerNombre(ref.generadorNombre))}</strong></span>
+              <span class="d-block" style="font-size: 0.72rem;">Para: <strong>${esc(primerNombre(ref.receptorNombre))}</strong></span>
             </div>
             <div>
-              <select class="form-select form-select-sm" style="font-size: 0.75rem;" onchange="cambiarFaseSelect(${ref.id}, this.value)">
-                <option value="Referido" ${est === 'Referido' ? 'selected' : ''}>1. Referido</option>
-                <option value="Contacto" ${est === 'Contacto' ? 'selected' : ''}>2. Contacto</option>
-                <option value="Reunión 1-a-1" ${est === 'Reunión 1-a-1' ? 'selected' : ''}>3. Reunión 1-a-1</option>
-                <option value="Oportunidad" ${est === 'Oportunidad' ? 'selected' : ''}>4. Oportunidad</option>
-                <option value="Cotización" ${est === 'Cotización' ? 'selected' : ''}>5. Cotización</option>
-                <option value="Ganado" ${est === 'Ganado' ? 'selected' : ''}>6. Ganado (GNC)</option>
+              <select class="form-select form-select-sm" style="font-size: 0.75rem;"
+                      ${editable ? '' : 'disabled'}
+                      title="${editable ? 'Cambiar fase' : cerrado ? 'Referido cerrado' : 'Solo el receptor o un administrador puede moverlo'}"
+                      onchange="cambiarFaseSelect(${ref.id}, this.value)">
+                ${opciones}
               </select>
             </div>
           </div>
         `;
-        columnas[est].appendChild(card);
+        columnas[colKey].appendChild(card);
       });
 
-      // Actualizar badges
       document.getElementById('badge-count-Referido').textContent = conteos['Referido'];
       document.getElementById('badge-count-Contacto').textContent = conteos['Contacto'];
       document.getElementById('badge-count-Reunion').textContent = conteos['Reunión 1-a-1'];
@@ -346,69 +394,97 @@
       document.getElementById('badge-count-Ganado').textContent = conteos['Ganado'];
     }
 
-    function cambiarFaseSelect(referidoId, nuevaFase) {
+    /** Reemplaza el referido en la caché con la versión que devolvió el servidor. */
+    function actualizarCache(ref) {
+      const i = referidosCache.findIndex(r => r.id === ref.id);
+      if (i >= 0) referidosCache[i] = ref; else referidosCache.unshift(ref);
+      renderizarTableroEmbudo();
+    }
+
+    async function cambiarFaseSelect(referidoId, nuevaFase) {
       if (nuevaFase === 'Ganado') {
         document.getElementById('ganadoReferidoId').value = referidoId;
         document.getElementById('montoGanadoInput').value = '';
-        const modal = new bootstrap.Modal(document.getElementById('modalNegocioGanado'));
-        modal.show();
-      } else {
-        window.NetxStore.avanzarEstadoReferido(referidoId, nuevaFase);
-        renderizarTableroEmbudo();
-        window.NetxAlert(`Referido movido a la fase [${nuevaFase}].`);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNegocioGanado')).show();
+        return;
+      }
+      if (nuevaFase === 'Perdido') {
+        const ref = referidosCache.find(r => r.id === referidoId);
+        // Perdido es definitivo: pedir confirmación.
+        if (!window.confirm(`¿Marcar "${ref?.prospectoEmpresa}" como Perdido? Ya no podrá moverse.`)) {
+          renderizarTableroEmbudo();
+          return;
+        }
+      }
+      try {
+        const { referido } = await api(API_REFERIDOS, {
+          method: 'PATCH',
+          body: JSON.stringify({ id: referidoId, estado: nuevaFase })
+        });
+        actualizarCache(referido);
+        window.NetxAlert(`Referido movido a la fase [${esc(nuevaFase)}].`);
+      } catch (err) {
+        renderizarTableroEmbudo();              // regresa el select a la fase real
+        window.NetxAlert(esc(err.message), 'danger');
       }
     }
 
-    function guardarGanadoHandler(e) {
+    async function guardarGanadoHandler(e) {
       e.preventDefault();
-      const refId = document.getElementById('ganadoReferidoId').value;
+      const refId = Number(document.getElementById('ganadoReferidoId').value);
       const monto = Number(document.getElementById('montoGanadoInput').value);
+      const boton = e.submitter;
+      if (boton) boton.disabled = true;
 
       try {
-        window.NetxStore.avanzarEstadoReferido(refId, 'Ganado', monto);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('modalNegocioGanado'));
-        if (modal) modal.hide();
-        renderizarTableroEmbudo();
-        window.NetxAlert(`¡Negocio Ganado por $${monto.toLocaleString()} MXN registrado exitosamente!`);
+        const { referido } = await api(API_REFERIDOS, {
+          method: 'PATCH',
+          body: JSON.stringify({ id: refId, estado: 'Ganado', montoGanado: monto })
+        });
+        referidosCache = referidosCache.map(r => r.id === referido.id ? referido : r);
+        bootstrap.Modal.getInstance(document.getElementById('modalNegocioGanado'))?.hide();  // re-renderiza al cerrarse
+        window.NetxAlert(`¡Negocio Ganado por $${pesos(monto)} MXN registrado exitosamente!`);
       } catch (err) {
-        alert(err.message);
+        window.NetxAlert(esc(err.message), 'danger');
+      } finally {
+        if (boton) boton.disabled = false;
       }
     }
 
-    function guardarReferidoHandler(e) {
+    async function guardarReferidoHandler(e) {
       e.preventDefault();
-      const alerta = document.getElementById('alertaDuplicado');
+      const alerta    = document.getElementById('alertaDuplicado');
       const alertaMsg = document.getElementById('mensajeDuplicado');
+      const boton     = e.submitter;
 
       const receptorId = Number(document.getElementById('selectReceptor').value);
-      const receptorMember = window.NetxStore.getMemberById(receptorId);
-      const currentUser = window.NetxStore.getCurrentUser();
+      const receptor   = miembrosCache.find(m => m.id === receptorId);
 
       const refData = {
-        generadorId: currentUser.id,
-        generadorNombre: currentUser.nombre,
-        receptorId: receptorId,
-        receptorNombre: receptorMember ? receptorMember.nombre : 'Socio Receptor',
-        prospectoNombre: document.getElementById('prospectoNombre').value.trim(),
-        prospectoEmpresa: document.getElementById('prospectoEmpresa').value.trim(),
+        receptorId,
+        prospectoNombre:   document.getElementById('prospectoNombre').value.trim(),
+        prospectoEmpresa:  document.getElementById('prospectoEmpresa').value.trim(),
         prospectoTelefono: document.getElementById('prospectoTelefono').value.trim(),
-        prospectoEmail: document.getElementById('prospectoEmail').value.trim(),
-        giroRequerido: receptorMember ? receptorMember.giro : 'General',
-        necesidad: document.getElementById('necesidadReferido').value.trim(),
-        esUrgente: document.getElementById('checkEsUrgente').checked
+        prospectoEmail:    document.getElementById('prospectoEmail').value.trim(),
+        giroRequerido:     receptor ? receptor.giro : null,
+        necesidad:         document.getElementById('necesidadReferido').value.trim(),
+        esUrgente:         document.getElementById('checkEsUrgente').checked
       };
 
+      alerta.classList.add('d-none');
+      if (boton) boton.disabled = true;
       try {
-        window.NetxStore.saveReferral(refData);
-        alerta.classList.add('d-none');
+        const { referido } = await api(API_REFERIDOS, { method: 'POST', body: JSON.stringify(refData) });
+        actualizarCache(referido);
         document.getElementById('formReferido').reset();
-        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEmitirReferido'));
-        if (modal) modal.hide();
-        renderizarTableroEmbudo();
+        bootstrap.Modal.getInstance(document.getElementById('modalEmitirReferido'))?.hide();
         window.NetxAlert('Referido emitido correctamente al socio. Candado antiduplicados verificado.');
       } catch (err) {
+        // 409 = duplicado activo (HU-19); 422 = datos inválidos. Ambos se muestran en el modal.
         alerta.classList.remove('d-none');
         alertaMsg.textContent = err.message;
+      } finally {
+        if (boton) boton.disabled = false;
       }
     }
   </script>

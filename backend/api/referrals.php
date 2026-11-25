@@ -12,6 +12,10 @@ declare(strict_types=1);
  *          "giroRequerido": "...", "esUrgente": true }
  *        El generador es SIEMPRE el miembro de la sesión (no se acepta del cliente).
  *        Respuestas: 201 creado · 409 prospecto duplicado activo · 422 datos inválidos.
+ * PATCH → avanza el referido en el embudo (HU-20, HU-21). Body JSON:
+ *        { "id": 5, "estado": "Ganado", "montoGanado": 35000 }
+ *        Solo el receptor o un administrador. Ganado exige monto > 0.
+ *        Ganado y Perdido son estados finales: ya no se pueden mover.
  */
 
 require_once __DIR__ . '/_bootstrap.php';
@@ -24,7 +28,8 @@ const NETX_SQL_REFERIDOS =
     'SELECT r.id, r.id_generador, g.nombre AS generador_nombre,
             r.id_receptor, rc.nombre AS receptor_nombre,
             r.prospecto_nombre, r.prospecto_empresa, r.prospecto_telefono, r.prospecto_email,
-            r.giro_requerido, r.necesidad, r.es_urgente, r.estado, r.fecha_registro
+            r.giro_requerido, r.necesidad, r.es_urgente, r.estado, r.monto_ganado,
+            r.fecha_registro, r.fecha_actualizacion
        FROM referidos r
        JOIN miembros g  ON g.id_miembro  = r.id_generador
        JOIN miembros rc ON rc.id_miembro = r.id_receptor';
@@ -44,9 +49,32 @@ function netx_referido_json(array $r): array
         'giroRequerido'     => $r['giro_requerido'],
         'necesidad'         => $r['necesidad'],
         'esUrgente'         => (bool)$r['es_urgente'],
-        'estado'            => $r['estado'],
-        'fechaRegistro'     => $r['fecha_registro'],
+        'estado'             => $r['estado'],
+        'montoGanado'        => (float)$r['monto_ganado'],
+        'fechaRegistro'      => $r['fecha_registro'],
+        'fechaActualizacion' => $r['fecha_actualizacion'],
     ];
+}
+
+/** Lee el body JSON de POST/PATCH o responde 415/400. */
+function netx_json_body(): array
+{
+    if (stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') === false) {
+        json_out(['success' => false, 'message' => 'Se esperaba application/json.'], 415);
+    }
+    $body = json_decode(file_get_contents('php://input') ?: '', true);
+    if (!is_array($body)) {
+        json_out(['success' => false, 'message' => 'JSON inválido.'], 400);
+    }
+    return $body;
+}
+
+function netx_referido_por_id(int $id): ?array
+{
+    $st = netx_db()->prepare(NETX_SQL_REFERIDOS . ' WHERE r.id = ?');
+    $st->execute([$id]);
+    $r = $st->fetch();
+    return $r ? netx_referido_json($r) : null;
 }
 
 /** Texto opcional: recorta, convierte '' en null y valida longitud máxima. */
@@ -103,13 +131,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     // POST: registrar referido (HU-18) con candado de duplicados (HU-19)
     // ------------------------------------------------------------------
     case 'POST':
-        if (stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') === false) {
-            json_out(['success' => false, 'message' => 'Se esperaba application/json.'], 415);
-        }
-        $body = json_decode(file_get_contents('php://input') ?: '', true);
-        if (!is_array($body)) {
-            json_out(['success' => false, 'message' => 'JSON inválido.'], 400);
-        }
+        $body = netx_json_body();
 
         // El generador es el miembro dueño de la sesión.
         $idGenerador = $user['idMiembro'] ?? null;
@@ -209,11 +231,70 @@ switch ($_SERVER['REQUEST_METHOD']) {
             throw $e;   // lo atiende el manejador de _bootstrap.php (500)
         }
 
-        $st = netx_db()->prepare(NETX_SQL_REFERIDOS . ' WHERE r.id = ?');
-        $st->execute([$id]);
-        json_out(['success' => true, 'message' => 'Referido registrado.', 'referido' => netx_referido_json($st->fetch())], 201);
+        json_out(['success' => true, 'message' => 'Referido registrado.', 'referido' => netx_referido_por_id($id)], 201);
+
+    // ------------------------------------------------------------------
+    // PATCH: cambiar fase del embudo (HU-20) y registrar negocio ganado (HU-21)
+    // ------------------------------------------------------------------
+    case 'PATCH':
+        $body   = netx_json_body();
+        $id     = filter_var($body['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $estado = (string)($body['estado'] ?? '');
+
+        if ($id === false) {
+            json_out(['success' => false, 'message' => 'Falta el ID del referido.'], 422);
+        }
+        if (!in_array($estado, NETX_ESTADOS_REFERIDO, true)) {
+            json_out(['success' => false, 'message' => 'Estado no válido.', 'estadosValidos' => NETX_ESTADOS_REFERIDO], 422);
+        }
+
+        $monto = 0.0;
+        if ($estado === 'Ganado') {
+            $monto = filter_var($body['montoGanado'] ?? null, FILTER_VALIDATE_FLOAT);
+            if ($monto === false || $monto <= 0 || $monto > 9999999999.99) {
+                json_out(['success' => false, 'message' => 'Para registrar un negocio como Ganado debes capturar un monto mayor a 0.',
+                          'errores' => ['montoGanado' => 'Monto mayor a 0.']], 422);
+            }
+            $monto = round($monto, 2);
+        }
+
+        $pdo = netx_db();
+        $pdo->beginTransaction();
+        try {
+            $st = $pdo->prepare('SELECT id_receptor, estado FROM referidos WHERE id = ? FOR UPDATE');
+            $st->execute([$id]);
+            $actual = $st->fetch();
+            if (!$actual) {
+                $pdo->rollBack();
+                json_out(['success' => false, 'message' => 'Referido no encontrado.'], 404);
+            }
+
+            // Solo el receptor (quien trabaja la oportunidad) o un administrador mueve el embudo.
+            $esReceptor = (int)($user['idMiembro'] ?? 0) === (int)$actual['id_receptor'];
+            if (!$esReceptor && ($user['rolClave'] ?? '') !== 'administrador') {
+                $pdo->rollBack();
+                json_out(['success' => false, 'message' => 'Solo el socio receptor o un administrador puede mover este referido.'], 403);
+            }
+
+            // Ganado/Perdido cierran el referido: no se reabren (protege el monto GNC registrado).
+            if (in_array($actual['estado'], ['Ganado', 'Perdido'], true)) {
+                $pdo->rollBack();
+                json_out(['success' => false, 'message' => "El referido ya está cerrado como \"{$actual['estado']}\" y no se puede modificar."], 409);
+            }
+
+            $pdo->prepare('UPDATE referidos SET estado = ?, monto_ganado = ? WHERE id = ?')
+                ->execute([$estado, $monto, $id]);
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+
+        json_out(['success' => true, 'message' => "Referido movido a \"$estado\".", 'referido' => netx_referido_por_id($id)]);
 
     default:
-        header('Allow: GET, POST');
+        header('Allow: GET, POST, PATCH');
         json_out(['success' => false, 'message' => 'Método no permitido.'], 405);
 }

@@ -97,7 +97,11 @@ CREATE TABLE IF NOT EXISTS referidos (
     estado ENUM('Referido', 'Contacto', 'Reunión 1-a-1', 'Oportunidad',
                 'Cotización', 'Ganado', 'Perdido')
            NOT NULL DEFAULT 'Referido',
+    -- Solo > 0 cuando estado = 'Ganado' (HU-21).
+    monto_ganado DECIMAL(12,2) NOT NULL DEFAULT 0,
     fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                        ON UPDATE CURRENT_TIMESTAMP,
 
     -- Acelera el candado de duplicados activos por receptor (HU-19).
     INDEX idx_referidos_receptor_estado (id_receptor, estado),
@@ -112,7 +116,11 @@ CREATE TABLE IF NOT EXISTS referidos (
         REFERENCES miembros(id_miembro),
 
     CONSTRAINT chk_referidos_distintos
-        CHECK (id_generador <> id_receptor)
+        CHECK (id_generador <> id_receptor),
+
+    CONSTRAINT chk_referidos_monto
+        CHECK ((estado = 'Ganado' AND monto_ganado > 0)
+            OR (estado <> 'Ganado' AND monto_ganado = 0))
 ) ENGINE=InnoDB;
 
 -- 6. ROLES INICIALES
